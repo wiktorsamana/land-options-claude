@@ -1,0 +1,16 @@
+reward_id,user_id,land_type,count
+reward_001_forest,employee_001,Forest,2
+reward_001_house,employee_001,House,1
+reward_001_tree,employee_001,Tree,1
+reward_002_forest,employee_002,Forest,3
+reward_002_house,employee_002,House,0
+reward_002_tree,employee_002,Tree,2
+reward_003_forest,employee_003,Forest,1
+reward_003_house,employee_003,House,2
+reward_003_tree,employee_003,Tree,1
+reward_004_forest,employee_004,Forest,4
+reward_004_house,employee_004,House,2
+reward_004_tree,employee_004,Tree,3
+reward_005_forest,employee_005,Forest,1
+reward_005_house,employee_005,House,1
+reward_005_tree,employee_005,Tree,0
