@@ -6,25 +6,25 @@ const RewardCard = ({ type, count, onClaim, isLoading }) => {
     switch (type) {
       case 'forest':
         return { 
-          icon: '🌲', 
-          name: 'Forest Land', 
-          description: 'Peaceful forest parcel',
+          icon: '🌴', 
+          name: 'Palm Tree', 
+          description: 'Peaceful palmtree grove',
           bgColor: 'from-green-400 to-green-500',
           textColor: 'text-green-700'
         };
       case 'house':
         return { 
-          icon: '🏠', 
-          name: 'House Plot', 
-          description: 'Residential building spot',
+          icon: '🌿', 
+          name: 'Jungle Plot', 
+          description: 'Jungle house plot',
           bgColor: 'from-yellow-400 to-yellow-500',
           textColor: 'text-yellow-700'
         };
       case 'tree':
         return { 
           icon: '🌳', 
-          name: 'Tree Grove', 
-          description: 'Natural tree collection',
+          name: 'Mango Tree', 
+          description: 'Natural mango tree',
           bgColor: 'from-emerald-400 to-emerald-500',
           textColor: 'text-emerald-700'
         };

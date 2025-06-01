@@ -321,32 +321,34 @@ export default function LandGameApp() {
                   );
                 })}
               </div>
-
-              {/* Progress */}
-              <div className="mt-6 space-y-4">
-                <ProgressBar 
-                  current={ownedSquaresCount} 
-                  total={25} 
-                  label="Progress to Full Parcel"
-                  color="green"
-                />
-                
-                {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
-                  <div className="text-center text-sm text-gray-600">
-                    {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your land! 🚀
+              
+              {/* Land Equivalency Info */}
+              <div className="mt-6 bg-blue-50 p-4 rounded-lg">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                  Real Land Equivalent
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                  <div className="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <p className="font-semibold text-gray-700 mb-1">Full Parcel</p>
+                    <p className="text-gray-600">25 squares = 300m² plot in NC3</p>
                   </div>
-                )}
-                
-                {ownedSquaresCount === 25 && (
-                  <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                    <div className="text-2xl mb-1">🎉</div>
-                    <p className="text-sm font-semibold text-yellow-800">
-                      {gameData.userName} completed their land parcel!
+                  <div className="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <p className="font-semibold text-gray-700 mb-1">Your Progress</p>
+                    <p className="text-gray-600">
+                      {ownedSquaresCount} squares = {Math.round((ownedSquaresCount / 25) * 300)}m²
                     </p>
-                    <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
+                    <p className="text-green-600 font-semibold">
+                      {((ownedSquaresCount / 25) * 100).toFixed(0)}% complete
+                    </p>
                   </div>
-                )}
+                  <div className="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <p className="font-semibold text-gray-700 mb-1">Each Square</p>
+                    <p className="text-gray-600">1 square = 12m² of land</p>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
 
@@ -356,35 +358,61 @@ export default function LandGameApp() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center mb-4">
                 <Users className="w-5 h-5 text-blue-500 mr-2" />
-                <h3 className="text-xl font-bold text-gray-800">Player Stats</h3>
+                <h3 className="text-xl font-bold text-gray-800">Land Stats</h3>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Player</span>
+                  <span className="text-gray-600">Employee</span>
                   <span className="font-semibold">{gameData.userName}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Personal Land</span>
+                  <span className="text-gray-600">Earned Land partials</span>
                   <span className="font-semibold text-green-600">{ownedSquaresCount} squares</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Completion</span>
+                {/* <div className="flex items-center justify-between">
+                  <span className="text-gray-600">% of full parcel</span>
                   <span className="font-semibold text-blue-600">{completionPercentage}%</span>
-                </div>
-                <div className="flex items-center justify-between">
+                </div> */}
+                {/* <div className="flex items-center justify-between">
                   <span className="text-gray-600">Streak</span>
                   <div className="flex items-center text-orange-500">
                     <Zap className="w-4 h-4 mr-1" />
                     <span className="font-semibold">{gameData.streakDays} days</span>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Total Earnings</span>
+                  <span className="text-gray-600">Market plot value</span>
                   <div className="flex items-center text-yellow-600">
                     <Trophy className="w-4 h-4 mr-1" />
                     <span className="font-semibold">${gameData.totalEarnings}</span>
                   </div>
                 </div>
+              </div>
+              
+              {/* Progress Bar */}
+              <div className="mt-4">
+                <ProgressBar 
+                  current={ownedSquaresCount} 
+                  total={25} 
+                  label="Progress to Full Parcel"
+                  color="green"
+                />
+                
+                {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
+                  <div className="text-center text-sm text-gray-600 mt-2">
+                    {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your land! 🚀
+                  </div>
+                )}
+                
+                {ownedSquaresCount === 25 && (
+                  <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                    <div className="text-2xl mb-1">🎉</div>
+                    <p className="text-sm font-semibold text-yellow-800">
+                      {gameData.userName} completed their land parcel!
+                    </p>
+                    <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
+                  </div>
+                )}
               </div>
             </div>
 

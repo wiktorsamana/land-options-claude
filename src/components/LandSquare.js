@@ -8,9 +8,9 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted }) => {
     
     switch (type) {
       case 'forest':
-        return <div className={`${baseStyle} text-green-600`}>🌲</div>;
+        return <div className={`${baseStyle} text-green-600`}>🌴</div>;
       case 'house':
-        return <div className={`${baseStyle} text-yellow-600`}>🏠</div>;
+        return <div className={`${baseStyle} text-yellow-600`}>🌿</div>;
       case 'tree':
         return <div className={`${baseStyle} text-green-500`}>🌳</div>;
       default:
