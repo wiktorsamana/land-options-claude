@@ -280,7 +280,8 @@ export default function LandGameApp() {
           {/* Game Board */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
+              {/* Header section, user, progress, refresh button, etc. */}
+              {/* <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
                   {gameData.userName}'s Parcel
                 </h2>
@@ -298,6 +299,57 @@ export default function LandGameApp() {
                     <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                     <span className="text-xs">Refresh</span>
                   </button>
+                </div>
+              </div> */}
+              
+              {/* Land Stats */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center mb-3">
+                  <Users className="w-5 h-5 text-blue-500 mr-2" />
+                  <h3 className="text-lg font-bold text-gray-800">Land Stats</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Employee</span>
+                    <p className="font-semibold">{gameData.userName}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Earned Land partials</span>
+                    <p className="font-semibold text-green-600">{ownedSquaresCount} squares</p>
+                    <p className="text-xs text-gray-500">
+                      Value: ${Math.round((ownedSquaresCount / 25) * gameData.totalEarnings).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Market plot value</span>
+                    <p className="font-semibold text-yellow-600">${gameData.totalEarnings}</p>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="mt-4">
+                  <ProgressBar 
+                    current={ownedSquaresCount} 
+                    total={25} 
+                    label="Progress to Full Parcel"
+                    color="green"
+                  />
+                  
+                  {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
+                    <div className="text-center text-sm text-gray-600 mt-2">
+                      {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your land! 🚀
+                    </div>
+                  )}
+                  
+                  {ownedSquaresCount === 25 && (
+                    <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                      <div className="text-2xl mb-1">🎉</div>
+                      <p className="text-sm font-semibold text-yellow-800">
+                        {gameData.userName} completed their land parcel!
+                      </p>
+                      <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -354,67 +406,6 @@ export default function LandGameApp() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Player Stats */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center mb-4">
-                <Users className="w-5 h-5 text-blue-500 mr-2" />
-                <h3 className="text-xl font-bold text-gray-800">Land Stats</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Employee</span>
-                  <span className="font-semibold">{gameData.userName}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Earned Land partials</span>
-                  <span className="font-semibold text-green-600">{ownedSquaresCount} squares</span>
-                </div>
-                {/* <div className="flex items-center justify-between">
-                  <span className="text-gray-600">% of full parcel</span>
-                  <span className="font-semibold text-blue-600">{completionPercentage}%</span>
-                </div> */}
-                {/* <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Streak</span>
-                  <div className="flex items-center text-orange-500">
-                    <Zap className="w-4 h-4 mr-1" />
-                    <span className="font-semibold">{gameData.streakDays} days</span>
-                  </div>
-                </div> */}
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Market plot value</span>
-                  <div className="flex items-center text-yellow-600">
-                    <Trophy className="w-4 h-4 mr-1" />
-                    <span className="font-semibold">${gameData.totalEarnings}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Progress Bar */}
-              <div className="mt-4">
-                <ProgressBar 
-                  current={ownedSquaresCount} 
-                  total={25} 
-                  label="Progress to Full Parcel"
-                  color="green"
-                />
-                
-                {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
-                  <div className="text-center text-sm text-gray-600 mt-2">
-                    {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your land! 🚀
-                  </div>
-                )}
-                
-                {ownedSquaresCount === 25 && (
-                  <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
-                    <div className="text-2xl mb-1">🎉</div>
-                    <p className="text-sm font-semibold text-yellow-800">
-                      {gameData.userName} completed their land parcel!
-                    </p>
-                    <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Available Rewards */}
             <div className="bg-white rounded-xl shadow-lg p-6">
@@ -460,8 +451,8 @@ export default function LandGameApp() {
               <div className="space-y-4">
                 <div className="text-center">
                   <div className="text-3xl mb-2">🏆</div>
-                  <p className="text-sm text-gray-600 mb-2">Personal Land Empire</p>
-                  <p className="text-xs text-gray-500">Complete your own 25 squares to unlock exclusive rewards</p>
+                  <p className="text-sm text-gray-600 mb-2">Personal Parcel in NC3</p>
+                  <p className="text-xs text-gray-500">Complete your own 25 squares to secure your NC3 plot!</p>
                 </div>
                 <ProgressBar 
                   current={ownedSquaresCount} 
@@ -522,7 +513,7 @@ export default function LandGameApp() {
         )}
 
         {/* Debug Panel for Airtable testing */}
-        {!isUsingMockData && (
+        {/* {!isUsingMockData && (
           <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
             <h3 className="text-lg font-bold text-blue-800 mb-2">🔧 Airtable Debug</h3>
             <p className="text-sm text-blue-700 mb-3">
@@ -565,7 +556,7 @@ export default function LandGameApp() {
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
