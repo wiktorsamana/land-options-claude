@@ -182,9 +182,17 @@ class AirtableService {
       
       const userRecordId = userRecords[0].id;
       
+      // Check if user_id is a linked field or text field
+      console.log('🔍 Creating land square with:', {
+        userId: userId,
+        userRecordId: userRecordId,
+        coordinates: `${x},${y}`,
+        landType: landType
+      });
+      
       const record = await this.landSquaresTable.create({
         square_id: squareId,
-        user_id: [userRecordId], // Link to user record
+        user_id: userId, // Use the actual user_id string, not the record ID array
         x_coordinate: x,
         y_coordinate: y,
         land_type: landType.charAt(0).toUpperCase() + landType.slice(1),
