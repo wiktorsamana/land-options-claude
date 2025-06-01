@@ -37,9 +37,10 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted }) => {
       )}
       
       {/* Coordinate overlay for debugging */}
-      <div className="absolute bottom-0 right-0 text-xs text-gray-400 opacity-50">
+      {/* Uncomment below to show coordinates or something in bottom right  */}
+      {/* <div className="absolute bottom-0 right-0 text-xs text-gray-400 opacity-50">
         {x},{y}
-      </div>
+      </div> */}
     </div>
   );
 };

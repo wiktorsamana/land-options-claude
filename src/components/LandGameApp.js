@@ -227,7 +227,7 @@ export default function LandGameApp() {
           <div className="bg-white rounded-xl p-8 text-center animate-bounce">
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold text-green-600 mb-2">Land Claimed!</h2>
-            <p className="text-gray-600">Your territory is growing!</p>
+            <p className="text-gray-600">Your Parcel is growing!</p>
           </div>
         </div>
       )}
@@ -236,7 +236,7 @@ export default function LandGameApp() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">🏞️ Land Empire</h1>
-          <p className="text-lg text-gray-600">Collect land, build your territory, earn rewards!</p>
+          <p className="text-lg text-gray-600">Collect land, build your Parcel, earn rewards!</p>
           
           {/* User Selector and Admin Button */}
           <div className="mt-6 flex justify-center items-center space-x-4">
@@ -282,7 +282,7 @@ export default function LandGameApp() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {gameData.userName}'s Territory
+                  {gameData.userName}'s Parcel
                 </h2>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center text-green-600">
@@ -446,7 +446,7 @@ export default function LandGameApp() {
                   <div className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
                     <div className="text-2xl mb-1">👑</div>
                     <p className="text-sm font-semibold text-green-800">Land Empire Complete!</p>
-                    <p className="text-xs text-green-700">{gameData.userName} owns their full territory!</p>
+                    <p className="text-xs text-green-700">{gameData.userName} owns their full Parcel!</p>
                   </div>
                 )}
               </div>

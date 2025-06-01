@@ -462,28 +462,21 @@ class AirtableService {
     }
 
     try {
-      // First get the user's Airtable record ID
-      const userRecords = await this.usersTable.select({
-        filterByFormula: `{user_id} = '${userId}'`,
-        maxRecords: 1
-      }).firstPage();
+      console.log('🔄 Updating reward count:', { userId, landType, newCount });
       
-      if (userRecords.length === 0) {
-        throw new Error('User not found');
-      }
+      // First, use getUserRewards to find the existing reward record
+      const currentRewards = await this.getUserRewards(userId);
+      const existingReward = currentRewards.find(r => r.type === landType.toLowerCase());
       
-      const userRecordId = userRecords[0].id;
-      
-      // Find existing reward record
-      const rewardRecords = await this.rewardsTable.select({
-        filterByFormula: `AND({user_id} = '${userRecordId}', {land_type} = '${landType.charAt(0).toUpperCase() + landType.slice(1)}')`
-      }).all();
-      
-      if (rewardRecords.length > 0) {
-        // Update existing record
-        const record = await this.rewardsTable.update(rewardRecords[0].id, {
+      if (existingReward) {
+        console.log('✅ Found existing reward to update:', existingReward);
+        
+        // Update the existing record using its ID
+        const record = await this.rewardsTable.update(existingReward.id, {
           count: newCount
         });
+        
+        console.log('✅ Updated reward:', record.fields);
         
         return {
           id: record.id,
@@ -491,18 +484,8 @@ class AirtableService {
           count: record.fields.count
         };
       } else {
-        // Create new record
-        const record = await this.rewardsTable.create({
-          user_id: [userRecordId],
-          land_type: landType.charAt(0).toUpperCase() + landType.slice(1),
-          count: newCount
-        });
-        
-        return {
-          id: record.id,
-          type: record.fields.land_type.toLowerCase(),
-          count: record.fields.count
-        };
+        console.log('❌ No existing reward found for', landType, '- NOT creating new one');
+        throw new Error(`No reward of type ${landType} found for user ${userId}`);
       }
     } catch (error) {
       console.error('Error updating reward count:', error);
