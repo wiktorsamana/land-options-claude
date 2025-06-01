@@ -2,11 +2,8 @@
 import Airtable from 'airtable';
 
 // Configuration - Add these to your environment variables
-// const AIRTABLE_BASE_ID = process.env.REACT_APP_AIRTABLE_BASE_ID;
-// const AIRTABLE_ACCESS_TOKEN = process.env.REACT_APP_AIRTABLE_ACCESS_TOKEN;
-
-const AIRTABLE_BASE_ID = 'app9LT4HqQCEGSY9x';
-const AIRTABLE_ACCESS_TOKEN = 'patEyTO1W1n2W7JpB.13d902acf623ba2bd8948ccfcd1d9231810cc0011242a002a2f1b4dad49ec8a3';
+const AIRTABLE_BASE_ID = process.env.REACT_APP_AIRTABLE_BASE_ID;
+const AIRTABLE_ACCESS_TOKEN = process.env.REACT_APP_AIRTABLE_ACCESS_TOKEN;
 
 // Debug in development
 if (process.env.NODE_ENV === 'development') {
@@ -40,8 +37,14 @@ class AirtableService {
     if (base) {
       this.usersTable = base('Users');
       this.landSquaresTable = base('Land Squares');
-      this.rewardsTable = base('Rewards');
+      this.rewardsTable = base('Available Rewards');
       this.isConnected = true;
+      
+      // Debug table names
+      console.log('🔧 Initialized Airtable tables:');
+      console.log('  - Users');
+      console.log('  - Land Squares');
+      console.log('  - Available Rewards');
     } else {
       this.isConnected = false;
       console.log('Airtable not configured - using mock data');
@@ -136,10 +139,15 @@ class AirtableService {
     }
 
     try {
+      console.log('🏞️ FRESH: Fetching land squares for user:', userId, 'at', new Date().toISOString());
+      
+      // Fresh data fetch
       const records = await this.landSquaresTable.select({
         filterByFormula: `AND({user_id} = '${userId}', {is_active} = TRUE())`,
         sort: [{ field: 'earned_date', direction: 'desc' }]
       }).all();
+      
+      console.log('✅ FRESH: Found', records.length, 'land squares for', userId);
       
       return records.map(record => ({
         id: record.id,
@@ -197,13 +205,166 @@ class AirtableService {
     }
   }
 
-  // Rewards Management
+  // Debug function to check what's actually in the rewards table
+  async debugRewardsTable() {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('🔍 DEBUG: Checking Available Rewards table contents...');
+      
+      // Get ALL records without any filter
+      const allRecords = await this.rewardsTable.select().all();
+      console.log('📊 TOTAL RECORDS IN AVAILABLE REWARDS TABLE:', allRecords.length);
+      
+      if (allRecords.length === 0) {
+        console.log('❌ Available Rewards table is EMPTY!');
+        console.log('💡 You need to add records to this table.');
+        return [];
+      }
+      
+      // Log each record in detail
+      allRecords.forEach((record, index) => {
+        console.log(`📋 Record ${index + 1}:`);
+        console.log('  Record ID:', record.id);
+        console.log('  reward_id:', record.fields.reward_id);
+        console.log('  user_id:', record.fields.user_id);
+        console.log('  land_type:', record.fields.land_type);
+        console.log('  count:', record.fields.count);
+        console.log('  All fields:', record.fields);
+        console.log('  ---');
+      });
+      
+      return allRecords;
+    } catch (error) {
+      console.error('❌ Debug error:', error);
+      throw error;
+    }
+  }
+
+  // Test method to bypass getUserRewards and directly get rewards
+  async testGetRewardsDirectly(userId) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('🧪 TEST: Getting rewards directly for:', userId);
+      
+      // First get the user's record ID
+      const userRecords = await this.usersTable.select({
+        filterByFormula: `{user_id} = '${userId}'`,
+        maxRecords: 1
+      }).firstPage();
+      
+      if (userRecords.length === 0) {
+        console.log('❌ User not found:', userId);
+        return [];
+      }
+      
+      const userRecordId = userRecords[0].id;
+      console.log('✅ User record ID:', userRecordId);
+      
+      const allRecords = await this.rewardsTable.select().all();
+      console.log('📊 All records found:', allRecords.length);
+      
+      const matchingRecords = allRecords.filter(record => {
+        const userIdField = record.fields.user_id;
+        console.log('🔍 Checking record:', record.fields.reward_id);
+        console.log('  user_id field:', userIdField);
+        console.log('  Looking for record ID:', userRecordId);
+        
+        // Check against record ID
+        let matches = false;
+        if (Array.isArray(userIdField)) {
+          matches = userIdField.includes(userRecordId);
+        } else if (typeof userIdField === 'string') {
+          matches = userIdField === userRecordId;
+        }
+        
+        console.log('  Matches:', matches);
+        return matches;
+      });
+      
+      console.log('✅ Matching records:', matchingRecords.length);
+      
+      return matchingRecords.map(record => ({
+        id: record.id,
+        type: record.fields.land_type?.toLowerCase() || 'forest',
+        count: record.fields.count || 0
+      }));
+    } catch (error) {
+      console.error('❌ Test error:', error);
+      throw error;
+    }
+  }
+
+  async debugUserRewardsLinking(userId) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('🔍 Debug: Checking user rewards linking for:', userId);
+      
+      // Get user record
+      const userRecords = await this.usersTable.select({
+        filterByFormula: `{user_id} = '${userId}'`,
+        maxRecords: 1
+      }).firstPage();
+      
+      if (userRecords.length === 0) {
+        console.log('❌ Debug: User not found');
+        return;
+      }
+      
+      const userRecord = userRecords[0];
+      console.log('✅ Debug: User record found:', {
+        id: userRecord.id,
+        name: userRecord.fields.name,
+        user_id: userRecord.fields.user_id
+      });
+      
+      // Get ALL rewards (to check structure)
+      console.log('🔍 Debug: Fetching ALL reward records...');
+      const allRewards = await this.rewardsTable.select().all();
+      console.log('📊 Debug: Total reward records in table:', allRewards.length);
+      
+      allRewards.forEach((record, index) => {
+        console.log(`   ${index + 1}. Record ID: ${record.id}`);
+        console.log(`      user_id field:`, record.fields.user_id);
+        console.log(`      user_id type:`, typeof record.fields.user_id);
+        console.log(`      land_type:`, record.fields.land_type);
+        console.log(`      count:`, record.fields.count);
+        console.log('      ---');
+      });
+      
+      // Try different filter approaches
+      console.log('🔍 Debug: Trying filter by user record ID...');
+      const rewardsByRecordId = await this.rewardsTable.select({
+        filterByFormula: `{user_id} = '${userRecord.id}'`
+      }).all();
+      console.log('📊 Debug: Rewards found by record ID:', rewardsByRecordId.length);
+      
+      console.log('🔍 Debug: Trying filter by user name...');
+      const rewardsByName = await this.rewardsTable.select({
+        filterByFormula: `{user_id} = '${userRecord.fields.name}'`
+      }).all();
+      console.log('📊 Debug: Rewards found by name:', rewardsByName.length);
+      
+    } catch (error) {
+      console.error('❌ Debug error:', error);
+    }
+  }
   async getUserRewards(userId) {
     if (!this.isConnected) {
       throw new Error('Airtable not configured');
     }
 
     try {
+      console.log('🎁 Fetching rewards for user:', userId);
+      
       // First get the user's Airtable record ID
       const userRecords = await this.usersTable.select({
         filterByFormula: `{user_id} = '${userId}'`,
@@ -211,30 +372,78 @@ class AirtableService {
       }).firstPage();
       
       if (userRecords.length === 0) {
+        console.log('❌ User not found for rewards:', userId);
         return [];
       }
       
       const userRecordId = userRecords[0].id;
+      console.log('✅ Found user record ID:', userRecordId);
       
-      console.log('🔍 getUserRewards Debug:');
-      console.log('userRecordId:', userRecordId);
+      // For linked records, we need to search within the array
+      // Try multiple approaches to find the records
+      console.log('🔍 Attempting to find rewards with multiple filter approaches...');
       
-      const records = await this.rewardsTable.select({
-        filterByFormula: `SEARCH('${userRecordId}', ARRAYJOIN({user_id})) > 0`
+      // Approach 1: Direct match (if it's a text field)
+      let records = await this.rewardsTable.select({
+        filterByFormula: `{user_id} = '${userRecordId}'`
       }).all();
+      console.log('📊 Approach 1 (direct match) found:', records.length);
       
-      console.log('Found reward records in getUserRewards:', records.length);
-      if (records.length > 0) {
-        console.log('First record fields:', records[0].fields);
+      // Approach 2: Search in array (if it's a linked record)
+      if (records.length === 0) {
+        records = await this.rewardsTable.select({
+          filterByFormula: `SEARCH('${userRecordId}', ARRAYJOIN({user_id})) > 0`
+        }).all();
+        console.log('📊 Approach 2 (array search) found:', records.length);
       }
       
-      return records.map(record => ({
+      // Approach 3: Match by user_id string (not record ID)
+      if (records.length === 0) {
+        records = await this.rewardsTable.select({
+          filterByFormula: `{user_id} = '${userId}'`
+        }).all();
+        console.log('📊 Approach 3 (user_id string) found:', records.length);
+      }
+      
+      // Approach 4: Get all records and filter manually
+      if (records.length === 0) {
+        console.log('🔍 Trying manual filtering...');
+        const allRecords = await this.rewardsTable.select().all();
+        console.log('📊 Total records in table:', allRecords.length);
+        
+        records = allRecords.filter(record => {
+          const userIdField = record.fields.user_id;
+          console.log(`Checking record ${record.id}:`, {
+            user_id_field: userIdField,
+            looking_for: userRecordId,
+            user_id_string: userId
+          });
+          
+          // Check various possibilities
+          if (Array.isArray(userIdField)) {
+            return userIdField.includes(userRecordId) || userIdField.includes(userId);
+          }
+          return userIdField === userRecordId || userIdField === userId;
+        });
+        console.log('📊 Manual filter found:', records.length);
+      }
+      
+      console.log('📊 Final reward records found:', records.length);
+      records.forEach((record, index) => {
+        console.log(`   ${index + 1}. ${record.fields.land_type}: ${record.fields.count}`);
+        console.log(`      user_id:`, record.fields.user_id);
+      });
+      
+      const rewards = records.map(record => ({
         id: record.id,
         type: record.fields.land_type?.toLowerCase() || 'forest',
         count: record.fields.count || 0
       }));
+      
+      console.log('✅ Processed rewards:', rewards);
+      return rewards;
     } catch (error) {
-      console.error('Error fetching rewards:', error);
+      console.error('❌ Error fetching rewards:', error);
       throw error;
     }
   }
@@ -258,24 +467,9 @@ class AirtableService {
       const userRecordId = userRecords[0].id;
       
       // Find existing reward record
-      const capitalizedLandType = landType.charAt(0).toUpperCase() + landType.slice(1);
-      const filterFormula = `AND(SEARCH('${userRecordId}', ARRAYJOIN({user_id})) > 0, {land_type} = '${capitalizedLandType}')`;
-      
-      console.log('🔍 updateRewardCount Debug:');
-      console.log('userId:', userId);
-      console.log('userRecordId:', userRecordId);
-      console.log('landType:', landType);
-      console.log('capitalizedLandType:', capitalizedLandType);
-      console.log('filterFormula:', filterFormula);
-      
       const rewardRecords = await this.rewardsTable.select({
-        filterByFormula: filterFormula
+        filterByFormula: `AND({user_id} = '${userRecordId}', {land_type} = '${landType.charAt(0).toUpperCase() + landType.slice(1)}')`
       }).all();
-      
-      console.log('Found reward records:', rewardRecords.length);
-      if (rewardRecords.length > 0) {
-        console.log('First record fields:', rewardRecords[0].fields);
-      }
       
       if (rewardRecords.length > 0) {
         // Update existing record
@@ -332,16 +526,23 @@ class AirtableService {
     }
 
     try {
+      console.log('🎮 Loading game data for:', userId);
+      
       const [user, landSquares, rewards] = await Promise.all([
         this.getUser(userId),
         this.getUserLandSquares(userId),
-        this.getUserRewards(userId)
+        this.getUserRewards(userId) // This now uses our comprehensive debugging method
       ]);
+      
+      console.log('✅ Game data loaded successfully');
+      console.log('  User:', user.name);
+      console.log('  Land squares:', landSquares.length);
+      console.log('  Rewards:', rewards.length);
       
       return {
         userId: user.userId,
         userName: user.name,
-        totalLandParcels: Math.floor(landSquares.length / 25), // Complete parcels
+        totalLandParcels: Math.floor(landSquares.length / 25),
         ownedSquares: landSquares,
         availableRewards: rewards,
         nextParcelProgress: landSquares.length,

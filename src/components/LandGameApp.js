@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users } from 'lucide-react';
+import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings } from 'lucide-react';
 
 // Import services
 import airtableService from '../services/airtableService';
@@ -12,12 +12,12 @@ import ProgressBar from './ProgressBar';
 import RewardCard from './RewardCard';
 import UserSelector from './UserSelector';
 
-// // Debug credentials in development
-// if (process.env.NODE_ENV === 'development') {
-//   console.log('🔍 Environment Variables Check:');
-//   console.log('Base ID:', process.env.REACT_APP_AIRTABLE_BASE_ID ? '✅ Found' : '❌ Missing');
-//   console.log('Access Token:', process.env.REACT_APP_AIRTABLE_ACCESS_TOKEN ? '✅ Found' : '❌ Missing');
-// }
+// Debug credentials in development
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔍 Environment Variables Check:');
+  console.log('Base ID:', process.env.REACT_APP_AIRTABLE_BASE_ID ? '✅ Found' : '❌ Missing');
+  console.log('Access Token:', process.env.REACT_APP_AIRTABLE_ACCESS_TOKEN ? '✅ Found' : '❌ Missing');
+}
 
 export default function LandGameApp() {
   const [gameData, setGameData] = useState(null);
@@ -28,6 +28,7 @@ export default function LandGameApp() {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("employee_001"); // Default user
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
@@ -50,6 +51,12 @@ export default function LandGameApp() {
       setIsLoading(true);
       setError(null);
       
+      // Debug: Check what's in the rewards table
+      if (dataService.debugRewardsTable) {
+        console.log('🔍 Running rewards table debug...');
+        await dataService.debugRewardsTable();
+      }
+      
       const data = await dataService.getGameData(currentUserId);
       setGameData(data);
     } catch (err) {
@@ -66,8 +73,26 @@ export default function LandGameApp() {
   const refreshData = async () => {
     try {
       setIsRefreshing(true);
+      console.log('🔄 FORCE REFRESH: Refreshing data for user:', currentUserId, 'at', new Date().toISOString());
+      
+      // Add a small delay to ensure fresh API calls
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const data = await dataService.getGameData(currentUserId);
+      console.log('📊 FORCE REFRESH: New game data loaded:', {
+        user: data.userName,
+        landSquares: data.ownedSquares.length,
+        rewards: data.availableRewards.length,
+        timestamp: new Date().toISOString()
+      });
+      
       setGameData(data);
+      
+      // Force a re-render by clearing and setting game data
+      setTimeout(() => {
+        console.log('✅ FORCE REFRESH: Data updated in UI');
+      }, 100);
+      
     } catch (err) {
       console.error('Error refreshing data:', err);
       setError('Failed to refresh data. Please try again.');
@@ -202,7 +227,7 @@ export default function LandGameApp() {
           <div className="bg-white rounded-xl p-8 text-center animate-bounce">
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold text-green-600 mb-2">Land Claimed!</h2>
-            <p className="text-gray-600">Your parcel is growing!</p>
+            <p className="text-gray-600">Your territory is growing!</p>
           </div>
         </div>
       )}
@@ -211,15 +236,25 @@ export default function LandGameApp() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">🏞️ Land Empire</h1>
-          <p className="text-lg text-gray-600">Collect land, build your parcel, earn rewards!</p>
+          <p className="text-lg text-gray-600">Collect land, build your territory, earn rewards!</p>
           
-          {/* User Selector */}
-          <div className="mt-6 flex justify-center">
+          {/* User Selector and Admin Button */}
+          <div className="mt-6 flex justify-center items-center space-x-4">
             <UserSelector 
               currentUserId={currentUserId}
               onUserChange={handleUserChange}
               dataService={dataService}
             />
+            
+            {/* Admin Panel Button */}
+            <button
+              onClick={() => setShowAdminPanel(true)}
+              className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 shadow-md"
+              title="Open Admin Panel"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Admin</span>
+            </button>
           </div>
           
           {/* Connection Status */}
@@ -247,7 +282,7 @@ export default function LandGameApp() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {gameData.userName}'s parcel
+                  {gameData.userName}'s Territory
                 </h2>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center text-green-600">
@@ -257,10 +292,11 @@ export default function LandGameApp() {
                   <button 
                     onClick={refreshData}
                     disabled={isRefreshing}
-                    className="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50"
+                    className="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 flex items-center space-x-1"
                     title="Refresh data"
                   >
                     <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    <span className="text-xs">Refresh</span>
                   </button>
                 </div>
               </div>
@@ -410,7 +446,7 @@ export default function LandGameApp() {
                   <div className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
                     <div className="text-2xl mb-1">👑</div>
                     <p className="text-sm font-semibold text-green-800">Land Empire Complete!</p>
-                    <p className="text-xs text-green-700">{gameData.userName} owns their full parcel!</p>
+                    <p className="text-xs text-green-700">{gameData.userName} owns their full territory!</p>
                   </div>
                 )}
               </div>
@@ -452,6 +488,52 @@ export default function LandGameApp() {
                 className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded"
               >
                 Reset {gameData?.userName}'s Progress
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Debug Panel for Airtable testing */}
+        {!isUsingMockData && (
+          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <h3 className="text-lg font-bold text-blue-800 mb-2">🔧 Airtable Debug</h3>
+            <p className="text-sm text-blue-700 mb-3">
+              Test your Airtable connection and rewards.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button 
+                onClick={async () => {
+                  console.log('🧪 Testing rewards table...');
+                  try {
+                    await dataService.debugRewardsTable();
+                  } catch (error) {
+                    console.error('Debug failed:', error);
+                  }
+                }}
+                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
+              >
+                Debug Rewards Table
+              </button>
+              <button 
+                onClick={async () => {
+                  console.log('🧪 Testing direct rewards...');
+                  try {
+                    const result = await dataService.testGetRewardsDirectly(currentUserId);
+                    console.log('🎯 Direct test result:', result);
+                    alert(`Found ${result.length} rewards directly!`);
+                  } catch (error) {
+                    console.error('Direct test failed:', error);
+                  }
+                }}
+                className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded"
+              >
+                Test Direct Rewards
+              </button>
+              <button 
+                onClick={refreshData}
+                className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded"
+              >
+                Force Refresh
               </button>
             </div>
           </div>
