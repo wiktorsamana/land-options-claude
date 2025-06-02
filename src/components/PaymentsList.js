@@ -120,14 +120,29 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
 
   return (
     <div className="space-y-4">
+      {/* 2X Multiplier Highlight Banner */}
+      <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg p-6 mb-6 text-white shadow-lg">
+        <div className="flex items-center justify-center mb-2">
+          <TrendingUp className="w-8 h-8 mr-3" />
+          <h2 className="text-3xl font-bold">DOUBLE YOUR VALUE!</h2>
+        </div>
+        <p className="text-center text-lg font-semibold">
+          🎯 Get a 2X MULTIPLIER when converting cash to land! 🎯
+        </p>
+        <p className="text-center text-sm mt-2 opacity-90">
+          Every $1 in bonus becomes $2 in land value - that's 100% extra value!
+        </p>
+      </div>
+
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
         <div className="flex items-start">
           <AlertCircle className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-800">
-            <p className="font-semibold mb-1">Conversion Terms:</p>
+            <p className="font-semibold mb-1">How it works:</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>{conversionMultiplier}x multiplier on all conversions</li>
+              <li><span className="font-bold text-green-600">2X MULTIPLIER</span> on all conversions (100% bonus!)</li>
               <li>Each palm tree square costs ${squareValue.toLocaleString()} in land value</li>
+              <li>Example: $1,000 cash → $2,000 land value → 1 square</li>
               <li>Minimum conversion: $1,000</li>
             </ul>
           </div>
@@ -173,22 +188,26 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
                   </div>
                   
                   {/* Conversion Preview */}
-                  <div className="bg-gray-50 rounded p-3 mt-3">
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded p-3 mt-3 border border-green-200">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Converts to:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">${payment.amount.toLocaleString()}</span>
+                        <span className="font-bold text-green-600 bg-green-100 px-2 py-1 rounded">×2</span>
+                        <ArrowRight className="w-4 h-4 text-gray-600" />
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-green-600">
-                          ${conversion.landValue.toLocaleString()} land value
+                          ${conversion.landValue.toLocaleString()} value
                         </span>
-                        <ArrowRight className="w-4 h-4 text-gray-400" />
-                        <span className="font-bold text-blue-600">
+                        <span className="text-gray-400">=</span>
+                        <span className="font-bold text-blue-600 text-lg">
                           {conversion.squaresEarned} 🌴
                         </span>
                       </div>
                     </div>
                     {conversion.remainingCash > 0 && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Remaining: ${conversion.remainingCash.toFixed(2)}
+                        Remaining cash: ${conversion.remainingCash.toFixed(2)}
                       </p>
                     )}
                   </div>
@@ -232,19 +251,32 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
       </div>
 
       {/* Total Summary */}
-      <div className="bg-gray-100 rounded-lg p-4 mt-6">
-        <h4 className="font-semibold text-gray-800 mb-2">Total Available:</h4>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Total pending payments:</span>
-          <span className="font-bold text-xl">
-            ${payments.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
-          </span>
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-gray-600">Potential land squares:</span>
-          <span className="font-bold text-xl text-green-600">
-            {payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0)} 🌴
-          </span>
+      <div className="bg-gradient-to-r from-gray-100 to-green-100 rounded-lg p-4 mt-6 border border-green-300">
+        <h4 className="font-semibold text-gray-800 mb-3">💰 Total Conversion Opportunity:</h4>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">Your pending cash:</span>
+            <span className="font-bold text-xl">
+              ${payments.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
+            </span>
+          </div>
+          <div className="flex items-center justify-center py-2">
+            <div className="bg-green-600 text-white px-4 py-2 rounded-full font-bold text-lg animate-pulse">
+              2X MULTIPLIER = 100% BONUS VALUE!
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">Becomes land value:</span>
+            <span className="font-bold text-xl text-green-600">
+              ${(payments.reduce((sum, p) => sum + p.amount, 0) * 2).toLocaleString()}
+            </span>
+          </div>
+          <div className="flex items-center justify-between border-t pt-3">
+            <span className="text-gray-700 font-semibold">Total land squares:</span>
+            <span className="font-bold text-2xl text-green-600">
+              {payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0)} 🌴
+            </span>
+          </div>
         </div>
       </div>
     </div>

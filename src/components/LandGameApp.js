@@ -275,10 +275,10 @@ export default function LandGameApp() {
               <a
                 href={`/bonus-converter?userId=${currentUserId}`}
                 className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 shadow-md"
-                title="Convert Bonus to Land"
+                title="Convert Bonus / Invoices to Land"
               >
                 <Trophy className="w-4 h-4" />
-                <span className="hidden sm:inline">Convert Bonus</span>
+                <span className="hidden sm:inline">Convert Bonus / Invoice</span>
               </a>
             </div>
           )}
