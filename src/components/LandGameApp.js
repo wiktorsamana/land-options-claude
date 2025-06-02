@@ -461,7 +461,7 @@ export default function LandGameApp() {
                   <p className="text-sm">Contact your manager to earn more land rewards!</p>
                   {isUsingMockData && (
                     <button 
-                      onClick={() => mockService.giveRewardToUser(currentUserId, 'forest', 2)}
+                      onClick={() => mockService.giveRewardToUser(currentUserId, 'jungle plot', 2)}
                       className="mt-3 text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded"
                     >
                       Add Demo Rewards
@@ -508,13 +508,13 @@ export default function LandGameApp() {
             </p>
             <div className="flex flex-wrap gap-2">
               <button 
-                onClick={() => mockService.giveRewardToUser(currentUserId, 'forest', 1).then(refreshData)}
+                onClick={() => mockService.giveRewardToUser(currentUserId, 'jungle plot', 1).then(refreshData)}
                 className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded"
               >
                 + Forest Reward
               </button>
               <button 
-                onClick={() => mockService.giveRewardToUser(currentUserId, 'house', 1).then(refreshData)}
+                onClick={() => mockService.giveRewardToUser(currentUserId, 'flathouse', 1).then(refreshData)}
                 className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded"
               >
                 + House Reward

@@ -4,29 +4,37 @@ import { Loader } from 'lucide-react';
 const RewardCard = ({ type, count, onClaim, isLoading }) => {
   const getRewardInfo = () => {
     switch (type) {
-      case 'forest':
+      case 'jungle plot':
         return { 
           icon: '🌴', 
-          name: 'Palm Tree', 
-          description: 'Peaceful palmtree grove',
+          name: 'Jungle Plot', 
+          description: 'Tropical jungle land',
           bgColor: 'from-green-400 to-green-500',
           textColor: 'text-green-700'
         };
-      case 'house':
+      case 'flathouse':
         return { 
-          icon: '🌿', 
-          name: 'Jungle Plot', 
-          description: 'Jungle house plot',
+          icon: '🏡', 
+          name: 'Flathouse', 
+          description: 'Modern residential building',
           bgColor: 'from-yellow-400 to-yellow-500',
           textColor: 'text-yellow-700'
         };
-      case 'tree':
+      case 'flathouse mini':
         return { 
-          icon: '🌳', 
-          name: 'Mango Tree', 
-          description: 'Natural mango tree',
+          icon: '🏠', 
+          name: 'Flathouse Mini', 
+          description: 'Compact residential unit',
           bgColor: 'from-emerald-400 to-emerald-500',
           textColor: 'text-emerald-700'
+        };
+      case 'tree': // Keep for backward compatibility (palm tree conversions)
+        return { 
+          icon: '🌴', 
+          name: 'Palm Tree', 
+          description: 'Tropical palm tree land',
+          bgColor: 'from-green-400 to-green-500',
+          textColor: 'text-green-700'
         };
       default:
         return { 

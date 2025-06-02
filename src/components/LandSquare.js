@@ -7,12 +7,14 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted }) => {
     const baseStyle = "absolute inset-0 flex items-center justify-center text-2xl";
     
     switch (type) {
-      case 'forest':
+      case 'jungle plot':
         return <div className={`${baseStyle} text-green-600`}>🌴</div>;
-      case 'house':
-        return <div className={`${baseStyle} text-yellow-600`}>🌿</div>;
-      case 'tree':
-        return <div className={`${baseStyle} text-green-500`}>🌳</div>;
+      case 'flathouse':
+        return <div className={`${baseStyle} text-yellow-600`}>🏢</div>;
+      case 'flathouse mini':
+        return <div className={`${baseStyle} text-green-500`}>🏠</div>;
+      case 'tree': // Keep for palm tree (employee conversions)
+        return <div className={`${baseStyle} text-green-500`}>🌴</div>;
       default:
         return <div className={`${baseStyle} text-gray-400`}>📦</div>;
     }
