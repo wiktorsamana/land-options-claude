@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings } from 'lucide-react';
+import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2 } from 'lucide-react';
 
 // Import services
 import airtableService from '../services/airtableService';
@@ -279,6 +279,16 @@ export default function LandGameApp() {
               >
                 <Trophy className="w-4 h-4" />
                 <span className="hidden sm:inline">Convert Bonus / Invoice</span>
+              </a>
+              
+              {/* Investor Converter Link */}
+              <a
+                href={`/investor-converter?userId=${currentUserId}`}
+                className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-md"
+                title="Investor Land Conversion Portal"
+              >
+                <Building2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Investor Portal</span>
               </a>
             </div>
           )}

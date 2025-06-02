@@ -609,6 +609,75 @@ class AirtableService {
     }
   }
 
+  // Investor conversion methods
+  async convertInvestmentToLand(userId, landType, investmentAmount, squaresEarned) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('🔄 Converting investment to land:', { userId, landType, investmentAmount, squaresEarned });
+      
+      // Add the land rewards
+      await this.addReward(userId, landType, squaresEarned);
+      
+      // Optionally track investment conversions in a separate table
+      try {
+        const investmentTable = base('Investment Conversions');
+        await investmentTable.create({
+          user_id: userId,
+          land_type: landType,
+          investment_amount: investmentAmount,
+          squares_earned: squaresEarned,
+          converted_date: new Date().toISOString(),
+          status: 'completed'
+        });
+      } catch (tableError) {
+        // Investment tracking table might not exist, but that's okay
+        console.log('Investment tracking table not available, continuing...');
+      }
+      
+      console.log('✅ Investment converted successfully');
+      return true;
+    } catch (error) {
+      console.error('Error converting investment:', error);
+      throw error;
+    }
+  }
+
+  async getUserInvestmentHistory(userId) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('📊 Fetching investment history for user:', userId);
+      
+      const investmentTable = base('Investment Conversions');
+      
+      const records = await investmentTable.select({
+        filterByFormula: `{user_id} = '${userId}'`,
+        sort: [{ field: 'converted_date', direction: 'desc' }]
+      }).all();
+      
+      console.log('📊 Found', records.length, 'investment conversions');
+      
+      return records.map(record => ({
+        id: record.id,
+        userId: record.fields.user_id,
+        landType: record.fields.land_type,
+        investmentAmount: record.fields.investment_amount || 0,
+        squaresEarned: record.fields.squares_earned || 0,
+        convertedDate: record.fields.converted_date,
+        status: record.fields.status || 'completed'
+      }));
+    } catch (error) {
+      console.error('Error fetching investment history:', error);
+      // Return empty array if table doesn't exist
+      return [];
+    }
+  }
+
   // Check connection status
   isAirtableConnected() {
     return this.isConnected;

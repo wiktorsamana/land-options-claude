@@ -245,6 +245,44 @@ class MockService {
     console.log('✅ [MOCK] Payment converted successfully');
     return true;
   }
+
+  // Investor conversion methods
+  async convertInvestmentToLand(userId, landType, investmentAmount, squaresEarned) {
+    await this.delay(600);
+    
+    console.log('🔄 [MOCK] Converting investment to land:', { userId, landType, investmentAmount, squaresEarned });
+    
+    // Add the land rewards
+    await this.addReward(userId, landType, squaresEarned);
+    
+    // Track the investment conversion (could be stored in a separate table in real implementation)
+    if (!this.investmentConversions) {
+      this.investmentConversions = [];
+    }
+    
+    this.investmentConversions.push({
+      id: `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      userId,
+      landType,
+      investmentAmount,
+      squaresEarned,
+      convertedDate: new Date().toISOString(),
+      status: 'completed'
+    });
+    
+    console.log('✅ [MOCK] Investment converted successfully');
+    return true;
+  }
+
+  async getUserInvestmentHistory(userId) {
+    await this.delay(300);
+    
+    if (!this.investmentConversions) {
+      return [];
+    }
+    
+    return this.investmentConversions.filter(inv => inv.userId === userId);
+  }
 }
 
 export default new MockService();
