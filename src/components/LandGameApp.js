@@ -20,6 +20,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default function LandGameApp() {
+  // Get URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const userIdFromUrl = urlParams.get('userId');
+  const hideControls = urlParams.get('hideControls') === 'true';
+  
   const [gameData, setGameData] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -27,7 +32,7 @@ export default function LandGameApp() {
   const [claimingReward, setClaimingReward] = useState(null);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState("employee_001"); // Default user
+  const [currentUserId, setCurrentUserId] = useState(userIdFromUrl || "employee_001"); // Use URL param or default
   const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Choose service based on Airtable configuration
@@ -38,6 +43,15 @@ export default function LandGameApp() {
   useEffect(() => {
     loadGameData();
   }, [currentUserId]); // Reload when user changes
+  
+  // Update URL when user changes (optional)
+  useEffect(() => {
+    if (currentUserId && currentUserId !== userIdFromUrl) {
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('userId', currentUserId);
+      window.history.pushState({}, '', newUrl);
+    }
+  }, [currentUserId, userIdFromUrl]);
 
   const handleUserChange = (newUserId) => {
     setCurrentUserId(newUserId);
@@ -239,23 +253,35 @@ export default function LandGameApp() {
           <p className="text-lg text-gray-600">Collect land, build your Parcel, earn rewards!</p>
           
           {/* User Selector and Admin Button */}
-          <div className="mt-6 flex justify-center items-center space-x-4">
-            <UserSelector 
-              currentUserId={currentUserId}
-              onUserChange={handleUserChange}
-              dataService={dataService}
-            />
-            
-            {/* Admin Panel Button */}
-            <button
-              onClick={() => setShowAdminPanel(true)}
-              className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 shadow-md"
-              title="Open Admin Panel"
-            >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Admin</span>
-            </button>
-          </div>
+          {!hideControls && (
+            <div className="mt-6 flex justify-center items-center space-x-4">
+              <UserSelector 
+                currentUserId={currentUserId}
+                onUserChange={handleUserChange}
+                dataService={dataService}
+              />
+              
+              {/* Admin Panel Button */}
+              <button
+                onClick={() => setShowAdminPanel(true)}
+                className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 shadow-md"
+                title="Open Admin Panel"
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
+              
+              {/* Bonus Converter Link */}
+              <a
+                href={`/bonus-converter?userId=${currentUserId}`}
+                className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 shadow-md"
+                title="Convert Bonus to Land"
+              >
+                <Trophy className="w-4 h-4" />
+                <span className="hidden sm:inline">Convert Bonus</span>
+              </a>
+            </div>
+          )}
           
           {/* Connection Status */}
           <div className="mt-4 flex justify-center space-x-4">
@@ -337,7 +363,7 @@ export default function LandGameApp() {
                   
                   {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
                     <div className="text-center text-sm text-gray-600 mt-2">
-                      {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your land! 🚀
+                      {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your parcel! 🚀
                     </div>
                   )}
                   

@@ -183,6 +183,58 @@ class MockService {
     this.rewards[userId] = [];
     return true;
   }
+
+  // Pending Payments Management (Mock)
+  async getUserPendingPayments(userId) {
+    await this.delay(300);
+    
+    // Return mock pending payments
+    const mockPayments = [
+      {
+        id: 'pay_001',
+        userId: userId,
+        amount: 1000,
+        description: 'Q4 Performance Bonus',
+        paymentDate: '2024-01-15',
+        status: 'pending',
+        type: 'bonus'
+      },
+      {
+        id: 'pay_002',
+        userId: userId,
+        amount: 2500,
+        description: 'Project Completion Bonus',
+        paymentDate: '2024-01-10',
+        status: 'pending',
+        type: 'bonus'
+      },
+      {
+        id: 'pay_003',
+        userId: userId,
+        amount: 750,
+        description: 'Referral Bonus',
+        paymentDate: '2024-01-05',
+        status: 'pending',
+        type: 'referral'
+      }
+    ];
+    
+    // Filter to only show pending payments
+    return mockPayments.filter(p => p.status === 'pending');
+  }
+
+  async convertPaymentToLand(paymentId, userId, landType, squaresEarned) {
+    await this.delay(600);
+    
+    console.log('🔄 [MOCK] Converting payment to land:', { paymentId, userId, landType, squaresEarned });
+    
+    // Add the land rewards
+    await this.addReward(userId, landType, squaresEarned);
+    
+    // In real implementation, this would update the payment status
+    console.log('✅ [MOCK] Payment converted successfully');
+    return true;
+  }
 }
 
 export default new MockService();

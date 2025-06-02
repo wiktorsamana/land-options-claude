@@ -546,6 +546,69 @@ class AirtableService {
     }
   }
 
+  // Pending Payments Management
+  async getUserPendingPayments(userId) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('💰 Fetching pending payments for user:', userId);
+      
+      // Assuming you have a "Pending Payments" table in Airtable
+      const paymentsTable = base('Pending Payments');
+      
+      const records = await paymentsTable.select({
+        filterByFormula: `{user_id} = '${userId}'`,
+        sort: [{ field: 'payment_date', direction: 'desc' }]
+      }).all();
+      
+      console.log('📊 Found', records.length, 'pending payments');
+      
+      return records.map(record => ({
+        id: record.id,
+        userId: record.fields.user_id,
+        amount: record.fields.amount || 0,
+        description: record.fields.description || 'Bonus Payment',
+        paymentDate: record.fields.payment_date,
+        status: record.fields.status || 'pending',
+        type: record.fields.type || 'bonus'
+      }));
+    } catch (error) {
+      console.error('Error fetching pending payments:', error);
+      // Return empty array if table doesn't exist
+      return [];
+    }
+  }
+
+  async convertPaymentToLand(paymentId, userId, landType, squaresEarned) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      console.log('🔄 Converting payment to land:', { paymentId, userId, landType, squaresEarned });
+      
+      // Update the payment status to 'converted'
+      const paymentsTable = base('Pending Payments');
+      await paymentsTable.update(paymentId, {
+        status: 'converted',
+        converted_date: new Date().toISOString(),
+        converted_to_squares: squaresEarned,
+        converted_land_type: landType
+      });
+      
+      // Add the land rewards
+      await this.addReward(userId, landType, squaresEarned);
+      
+      console.log('✅ Payment converted successfully');
+      return true;
+    } catch (error) {
+      console.error('Error converting payment:', error);
+      throw error;
+    }
+  }
+
   // Check connection status
   isAirtableConnected() {
     return this.isConnected;
