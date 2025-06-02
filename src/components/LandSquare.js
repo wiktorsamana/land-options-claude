@@ -13,8 +13,6 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted }) => {
         return <div className={`${baseStyle} text-yellow-600`}>🏢</div>;
       case 'flathouse mini':
         return <div className={`${baseStyle} text-green-500`}>🏠</div>;
-      case 'tree': // Keep for palm tree (employee conversions)
-        return <div className={`${baseStyle} text-green-500`}>🌴</div>;
       default:
         return <div className={`${baseStyle} text-gray-400`}>📦</div>;
     }

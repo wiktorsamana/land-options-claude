@@ -26,7 +26,7 @@ class MockService {
         { x: 1, y: 1, type: 'jungle plot', earnedDate: '2025-01-15' },
         { x: 2, y: 1, type: 'flathouse', earnedDate: '2025-01-20' },
         { x: 0, y: 2, type: 'jungle plot', earnedDate: '2025-01-22' },
-        { x: 1, y: 2, type: 'tree', earnedDate: '2025-02-01' },
+        { x: 1, y: 2, type: 'jungle plot', earnedDate: '2025-02-01' },
         { x: 3, y: 3, type: 'flathouse', earnedDate: '2025-02-05' },
         { x: 4, y: 4, type: 'jungle plot', earnedDate: '2025-02-10' },
       ]
@@ -36,7 +36,6 @@ class MockService {
       'employee_001': [
         { type: 'jungle plot', count: 2 },
         { type: 'flathouse', count: 1 },
-        { type: 'tree', count: 1 }
       ]
     };
   }

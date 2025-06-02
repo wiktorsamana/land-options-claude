@@ -74,7 +74,7 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
       await dataService.convertPaymentToLand(
         payment.id,
         userId,
-        'tree', // Palm tree
+        'jungle plot', // Default employee conversion type
         conversion.squaresEarned
       );
 

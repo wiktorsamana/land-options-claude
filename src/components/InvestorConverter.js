@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DollarSign, TrendingUp, Calculator, AlertTriangle, X, Sliders } from 'lucide-react';
+import './InvestorConverter.css';
 
 const InvestorConverter = ({ userId, dataService, onInvestmentConverted }) => {
   const [investmentAmount, setInvestmentAmount] = useState(200000);
@@ -289,21 +290,62 @@ const InvestorConverter = ({ userId, dataService, onInvestmentConverted }) => {
                 // Slider for jungle plot
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-2">
+                    <label className="block text-xs text-gray-500 mb-6">
                       Units to purchase (minimum 25 units)
                     </label>
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-600 min-w-[3rem]">25</span>
-                      <input
-                        type="range"
-                        min="0"
-                        max="500"
-                        step="1"
-                        value={conversion[landType]}
-                        onChange={(e) => updateConversion(landType, Number(e.target.value))}
-                        className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      />
-                      <span className="text-sm text-gray-600 min-w-[3rem]">500+</span>
+                    <div className="flex items-center space-x-4 mt-8">
+                      <span className="text-sm text-gray-600 min-w-[3rem]">0</span>
+                      <div className="flex-1 relative">
+                        <input
+                          type="range"
+                          min="0"
+                          max="150"
+                          step="1"
+                          value={conversion[landType]}
+                          onChange={(e) => updateConversion(landType, Number(e.target.value))}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(to right, 
+                              #e5e7eb 0%, 
+                              #e5e7eb ${(25/150)*100}%, 
+                              #3b82f6 ${(25/150)*100}%, 
+                              #3b82f6 100%)`
+                          }}
+                        />
+                        {/* Striped pattern overlay for disabled area */}
+                        <div 
+                          className="absolute top-0 bottom-0 left-0 h-2 rounded-l-lg pointer-events-none opacity-50"
+                          style={{ 
+                            width: `${(25/150)*100}%`,
+                            background: `repeating-linear-gradient(
+                              45deg,
+                              transparent,
+                              transparent 3px,
+                              #9ca3af 3px,
+                              #9ca3af 6px
+                            )`
+                          }}
+                        />
+                        {/* Minimum indicator line */}
+                        <div 
+                          className="absolute top-0 bottom-0 w-0.5 bg-gray-800 pointer-events-none"
+                          style={{ left: `${(25/150)*100}%` }}
+                        >
+                          <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700 whitespace-nowrap">
+                            Min: 25
+                          </span>
+                        </div>
+                        {/* Value indicator */}
+                        {conversion[landType] > 0 && conversion[landType] < 25 && (
+                          <div 
+                            className="absolute -top-6 text-xs font-bold text-gray-600 pointer-events-none"
+                            style={{ left: `${(conversion[landType]/150)*100}%`, transform: 'translateX(-50%)' }}
+                          >
+                            ⚠️ {conversion[landType]}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-600 min-w-[3rem]">150</span>
                       <input
                         type="number"
                         value={conversion[landType]}
@@ -334,8 +376,8 @@ const InvestorConverter = ({ userId, dataService, onInvestmentConverted }) => {
                         </div>
                       )}
                       {conversion[landType] > 0 && conversion[landType] < 25 && (
-                        <div className="mt-2 pt-2 border-t border-red-300">
-                          <p className="font-semibold text-red-600">
+                        <div className="mt-2 pt-2 border-t border-gray-300">
+                          <p className="font-semibold text-gray-600">
                             ⚠️ Minimum 25 units required for jungle plot
                           </p>
                         </div>

@@ -195,7 +195,7 @@ class AirtableService {
         user_id: userId, // Use the actual user_id string, not the record ID array
         x_coordinate: x,
         y_coordinate: y,
-        land_type: landType.charAt(0).toUpperCase() + landType.slice(1),
+        land_type: landType,
         earned_date: new Date().toISOString().split('T')[0],
         is_active: true
       });
@@ -204,7 +204,7 @@ class AirtableService {
         id: record.id,
         x: record.fields.x_coordinate,
         y: record.fields.y_coordinate,
-        type: record.fields.land_type.toLowerCase(),
+        type: record.fields.land_type?.toLowerCase() || 'jungle plot',
         earnedDate: record.fields.earned_date
       };
     } catch (error) {

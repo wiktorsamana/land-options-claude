@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2 } from 'lucide-react';
+import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 
 // Import services
 import airtableService from '../services/airtableService';
@@ -34,6 +34,7 @@ export default function LandGameApp() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(userIdFromUrl || "employee_001"); // Use URL param or default
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0);
 
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
@@ -124,6 +125,10 @@ export default function LandGameApp() {
     
     const reward = gameData.availableRewards.find(r => r.type === rewardType);
     if (!reward || reward.count <= 0) return;
+    
+    // Only claim whole units
+    const wholeUnits = Math.floor(reward.count);
+    if (wholeUnits <= 0) return;
 
     try {
       setClaimingReward(rewardType);
@@ -484,26 +489,179 @@ export default function LandGameApp() {
             {/* Achievement Progress */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-800 mb-4">Next Milestone</h3>
-              <div className="space-y-4">
-                <div className="text-center">
-                  <div className="text-3xl mb-2">🏆</div>
-                  <p className="text-sm text-gray-600 mb-2">Personal Parcel in NC3</p>
-                  <p className="text-xs text-gray-500">Complete your own 25 squares to secure your NC3 plot!</p>
-                </div>
-                <ProgressBar 
-                  current={ownedSquaresCount} 
-                  total={25} 
-                  label="Completion Progress"
-                  color="purple"
-                />
+              
+              {/* Milestone Carousel */}
+              <div className="relative">
+                {/* Navigation Buttons */}
+                <button
+                  onClick={() => setCurrentMilestoneIndex(Math.max(0, currentMilestoneIndex - 1))}
+                  className={`absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
+                    currentMilestoneIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={currentMilestoneIndex === 0}
+                >
+                  <ChevronLeft className="w-4 h-4 text-gray-600" />
+                </button>
                 
-                {ownedSquaresCount === 25 && (
-                  <div className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="text-2xl mb-1">👑</div>
-                    <p className="text-sm font-semibold text-green-800">Land Empire Complete!</p>
-                    <p className="text-xs text-green-700">{gameData.userName} owns their full Parcel!</p>
+                <button
+                  onClick={() => setCurrentMilestoneIndex(Math.min(2, currentMilestoneIndex + 1))}
+                  className={`absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
+                    currentMilestoneIndex === 2 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={currentMilestoneIndex === 2}
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                </button>
+                
+                {/* Milestone Content */}
+                <div className="overflow-hidden">
+                  <div 
+                    className="flex transition-transform duration-300 ease-in-out"
+                    style={{ transform: `translateX(-${currentMilestoneIndex * 100}%)` }}
+                  >
+                    {/* Milestone 1: Personal Parcel */}
+                    <div className="w-full flex-shrink-0 px-4">
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-3xl mb-2">🏆</div>
+                          <div className="flex items-center justify-center mb-2">
+                            <p className="text-sm font-semibold text-gray-700">Personal Parcel in NC3</p>
+                          </div>
+                          {/* Slider dots positioned with milestone title */}
+                          <div className="flex items-center justify-center space-x-2 mb-2">
+                            {[0, 1, 2].map((index) => (
+                              <button
+                                key={index}
+                                onClick={() => setCurrentMilestoneIndex(index)}
+                                className={`transition-all rounded-full ${
+                                  index === currentMilestoneIndex
+                                    ? 'bg-purple-600 w-8 h-3'
+                                    : 'bg-gray-300 w-3 h-3 hover:bg-gray-400'
+                                }`}
+                                aria-label={`Go to milestone ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">Complete your own 25 squares to secure your NC3 plot!</p>
+                        </div>
+                        <ProgressBar 
+                          current={ownedSquaresCount} 
+                          total={25} 
+                          label="Completion Progress"
+                          color="purple"
+                        />
+                        
+                        {ownedSquaresCount === 25 && (
+                          <div className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
+                            <div className="text-2xl mb-1">👑</div>
+                            <p className="text-sm font-semibold text-green-800">Milestone Complete!</p>
+                            <p className="text-xs text-green-700">You own a full NC3 Parcel!</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Milestone 2: Flathouse Mini */}
+                    <div className="w-full flex-shrink-0 px-4">
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-3xl mb-2 relative">
+                            {ownedSquaresCount < 25 ? (
+                              <>
+                                <Lock className="w-8 h-8 text-gray-400 mx-auto" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="text-5xl opacity-20">🏠</div>
+                                </div>
+                              </>
+                            ) : (
+                              '🏠'
+                            )}
+                          </div>
+                          <p className="text-sm font-semibold text-gray-700 mb-2">Flathouse Mini</p>
+                          {/* Slider dots positioned with milestone title */}
+                          <div className="flex items-center justify-center space-x-2 mb-2">
+                            {[0, 1, 2].map((index) => (
+                              <button
+                                key={index}
+                                onClick={() => setCurrentMilestoneIndex(index)}
+                                className={`transition-all rounded-full ${
+                                  index === currentMilestoneIndex
+                                    ? 'bg-purple-600 w-8 h-3'
+                                    : 'bg-gray-300 w-3 h-3 hover:bg-gray-400'
+                                }`}
+                                aria-label={`Go to milestone ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">Compact residential unit investment</p>
+                        </div>
+                        
+                        {ownedSquaresCount < 25 ? (
+                          <div className="bg-gray-50 rounded-lg p-4 text-center">
+                            <Lock className="w-5 h-5 text-gray-400 mx-auto mb-2" />
+                            <p className="text-xs text-gray-600 font-medium">Unlock First Milestone</p>
+                            <p className="text-xs text-gray-500 mt-1">Complete your Personal Parcel to see progress</p>
+                          </div>
+                        ) : (
+                          <div className="bg-blue-50 rounded-lg p-4 text-center">
+                            <p className="text-sm text-blue-600 font-medium">Coming Soon</p>
+                            <p className="text-xs text-blue-500 mt-1">Progress tracking will be available</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Milestone 3: Flathouse */}
+                    <div className="w-full flex-shrink-0 px-4">
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-3xl mb-2 relative">
+                            {ownedSquaresCount < 25 ? (
+                              <>
+                                <Lock className="w-8 h-8 text-gray-400 mx-auto" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="text-5xl opacity-20">🏢</div>
+                                </div>
+                              </>
+                            ) : (
+                              '🏢'
+                            )}
+                          </div>
+                          <p className="text-sm font-semibold text-gray-700 mb-2">Flathouse</p>
+                          {/* Slider dots positioned with milestone title */}
+                          <div className="flex items-center justify-center space-x-2 mb-2">
+                            {[0, 1, 2].map((index) => (
+                              <button
+                                key={index}
+                                onClick={() => setCurrentMilestoneIndex(index)}
+                                className={`transition-all rounded-full ${
+                                  index === currentMilestoneIndex
+                                    ? 'bg-purple-600 w-8 h-3'
+                                    : 'bg-gray-300 w-3 h-3 hover:bg-gray-400'
+                                }`}
+                                aria-label={`Go to milestone ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">Premium residential building investment</p>
+                        </div>
+                        
+                        {ownedSquaresCount < 25 ? (
+                          <div className="bg-gray-50 rounded-lg p-4 text-center">
+                            <Lock className="w-5 h-5 text-gray-400 mx-auto mb-2" />
+                            <p className="text-xs text-gray-600 font-medium">Unlock First Milestone</p>
+                            <p className="text-xs text-gray-500 mt-1">Complete your Personal Parcel to see progress</p>
+                          </div>
+                        ) : (
+                          <div className="bg-blue-50 rounded-lg p-4 text-center">
+                            <p className="text-sm text-blue-600 font-medium">Coming Soon</p>
+                            <p className="text-xs text-blue-500 mt-1">Progress tracking will be available</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -528,12 +686,6 @@ export default function LandGameApp() {
                 className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded"
               >
                 + House Reward
-              </button>
-              <button 
-                onClick={() => mockService.giveRewardToUser(currentUserId, 'tree', 1).then(refreshData)}
-                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
-              >
-                + Tree Reward
               </button>
               <button 
                 onClick={() => {

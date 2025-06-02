@@ -25,8 +25,8 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
       setIsConverting(true);
       setError(null);
 
-      // Add the palm tree rewards to the user
-      await dataService.addReward(userId, 'tree', squaresEarned);
+      // Add the land rewards to the user
+      await dataService.addReward(userId, 'jungle plot', squaresEarned);
 
       setConversionResult({
         originalBonus: pendingBonus,
@@ -110,7 +110,7 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
               <span className="text-2xl font-bold text-blue-600">{squaresEarned}</span>
               <span className="text-lg ml-2">🌴</span>
             </div>
-            <p className="text-sm text-gray-600">Palm tree squares</p>
+            <p className="text-sm text-gray-600">Jungle plot squares</p>
           </div>
         </div>
 

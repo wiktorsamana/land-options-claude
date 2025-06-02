@@ -2,6 +2,10 @@ import React from 'react';
 import { Loader } from 'lucide-react';
 
 const RewardCard = ({ type, count, onClaim, isLoading }) => {
+  const wholeUnits = Math.floor(count);
+  const decimalUnits = count - wholeUnits;
+  const hasDecimals = decimalUnits > 0;
+  
   const getRewardInfo = () => {
     switch (type) {
       case 'jungle plot':
@@ -27,14 +31,6 @@ const RewardCard = ({ type, count, onClaim, isLoading }) => {
           description: 'Compact residential unit',
           bgColor: 'from-emerald-400 to-emerald-500',
           textColor: 'text-emerald-700'
-        };
-      case 'tree': // Keep for backward compatibility (palm tree conversions)
-        return { 
-          icon: '🌴', 
-          name: 'Palm Tree', 
-          description: 'Tropical palm tree land',
-          bgColor: 'from-green-400 to-green-500',
-          textColor: 'text-green-700'
         };
       default:
         return { 
@@ -62,17 +58,29 @@ const RewardCard = ({ type, count, onClaim, isLoading }) => {
         <p className="text-xs text-gray-600 mb-3">{reward.description}</p>
         
         {/* Count badge */}
-        <div className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-bold mb-3 ${reward.textColor} bg-yellow-100`}>
-          <span className="mr-1">×</span>
-          {count}
+        <div className="mb-3">
+          <div className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-bold ${reward.textColor} bg-yellow-100`}>
+            <span className="mr-1">×</span>
+            {count.toFixed(2)}
+          </div>
+          {hasDecimals && (
+            <div className="mt-2 space-y-1">
+              <p className="text-xs text-gray-600">
+                <span className="font-medium">Claimable:</span> {wholeUnits} units
+              </p>
+              <p className="text-xs text-orange-600">
+                <span className="font-medium">Partial:</span> {decimalUnits.toFixed(2)} units
+              </p>
+            </div>
+          )}
         </div>
         
         {/* Claim button */}
         <button
           onClick={() => onClaim(type)}
-          disabled={isLoading || count <= 0}
+          disabled={isLoading || wholeUnits <= 0}
           className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform
-            ${isLoading || count <= 0
+            ${isLoading || wholeUnits <= 0
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : `bg-gradient-to-r ${reward.bgColor} text-white hover:shadow-lg hover:scale-105 active:scale-95`
             }`}
@@ -82,17 +90,23 @@ const RewardCard = ({ type, count, onClaim, isLoading }) => {
               <Loader className="w-4 h-4 animate-spin mr-2" />
               Claiming...
             </div>
-          ) : count <= 0 ? (
-            'No rewards'
+          ) : wholeUnits <= 0 ? (
+            hasDecimals ? 'Need full unit' : 'No rewards'
           ) : (
-            'Claim Land'
+            `Claim ${wholeUnits} Land`
           )}
         </button>
         
         {/* Availability indicator */}
-        {count > 0 && !isLoading && (
-          <div className="mt-2 text-xs text-green-600 font-medium">
-            ✓ Available to claim
+        {!isLoading && (
+          <div className="mt-2 text-xs font-medium">
+            {wholeUnits > 0 ? (
+              <span className="text-green-600">✓ {wholeUnits} unit{wholeUnits > 1 ? 's' : ''} ready to claim</span>
+            ) : hasDecimals ? (
+              <span className="text-orange-600">⚠️ Need {(1 - decimalUnits).toFixed(2)} more for full unit</span>
+            ) : (
+              <span className="text-gray-500">Convert bonus to earn land</span>
+            )}
           </div>
         )}
       </div>

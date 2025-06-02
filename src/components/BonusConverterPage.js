@@ -46,7 +46,7 @@ const BonusConverterPage = () => {
       {lastConversion && (
         <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
           <p className="font-semibold">
-            🎉 Converted "{lastConversion.payment}" into {lastConversion.squares} palm tree squares!
+            🎉 Converted "{lastConversion.payment}" into {lastConversion.squares} jungle plot squares!
           </p>
         </div>
       )}
