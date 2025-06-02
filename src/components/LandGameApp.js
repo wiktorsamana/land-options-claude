@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import './LandGameApp.css';
 
 // Import services
 import airtableService from '../services/airtableService';
@@ -395,24 +396,41 @@ export default function LandGameApp() {
               </div>
               
               {/* 5x5 Grid */}
-              <div className="grid grid-cols-5 gap-2 bg-gray-50 p-6 rounded-lg max-w-md mx-auto">
-                {Array.from({ length: 25 }, (_, index) => {
-                  const x = index % 5;
-                  const y = Math.floor(index / 5);
-                  const ownedSquare = gameData.ownedSquares.find(sq => sq.x === x && sq.y === y);
+              <div className="land-map-container p-6 rounded-lg relative overflow-hidden shadow-xl">
+                {/* Removed overlay to show plain image */}
+                
+                {/* Grid frame with plot label */}
+                <div className="relative z-10 max-w-md mx-auto">
+                  {/* Plot boundary frame */}
+                  <div className="absolute inset-0 border-3 border-dashed border-green-600/30 rounded-lg pointer-events-none">
+                    {/* 300 sqm label */}
+                    <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 px-3 py-1 text-sm font-bold text-green-800 bg-gray-100/40 border border-green-600/30 rounded shadow-sm backdrop-blur-sm">
+                      300 sqm
+                    </div>
+                  </div>
                   
-                  return (
-                    <LandSquare
-                      key={`${x}-${y}`}
-                      x={x}
-                      y={y}
-                      isOwned={!!ownedSquare}
-                      type={ownedSquare?.type}
-                      onClick={handleSquareClick}
-                      isHighlighted={selectedSquare?.x === x && selectedSquare?.y === y}
-                    />
-                  );
-                })}
+                  {/* Grid container */}
+                  <div className="p-4 grid grid-cols-5 gap-2">
+                  {Array.from({ length: 25 }, (_, index) => {
+                    const x = index % 5;
+                    const y = Math.floor(index / 5);
+                    const ownedSquare = gameData.ownedSquares.find(sq => sq.x === x && sq.y === y);
+                    
+                    return (
+                      <LandSquare
+                        key={`${x}-${y}`}
+                        x={x}
+                        y={y}
+                        isOwned={!!ownedSquare}
+                        type={ownedSquare?.type}
+                        earnedDate={ownedSquare?.earnedDate}
+                        onClick={handleSquareClick}
+                        isHighlighted={selectedSquare?.x === x && selectedSquare?.y === y}
+                      />
+                    );
+                  })}
+                  </div>
+                </div>
               </div>
               
               {/* Land Equivalency Info */}

@@ -1,0 +1,100 @@
+/* Land Map Background Styles */
+
+.land-map-container {
+  position: relative;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url('../assets/landscape-scaled.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Alternative background options - uncomment to use */
+
+/* Aerial farmland view */
+/*
+.land-map-container {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80');
+}
+*/
+
+/* Tropical landscape */
+/*
+.land-map-container {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url('https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=800&q=80');
+}
+*/
+
+/* City aerial view */
+/*
+.land-map-container {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url('https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=80');
+}
+*/
+
+/* Local image option */
+/*
+.land-map-container {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url('/land-background.jpg');
+}
+*/
+
+/* Pattern overlay for better visibility */
+.land-map-overlay {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 35px,
+      rgba(255, 255, 255, 0.05) 35px,
+      rgba(255, 255, 255, 0.05) 70px
+    );
+}
+
+/* Custom border width for plot frame */
+.border-3 {
+  border-width: 3px;
+}
+
+/* 3D flip animation styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Delayed fade-in animation for flip card text */
+.flip-text-content {
+  opacity: 0;
+  animation: fadeInDelayed 0.3s ease-in-out 0.4s forwards;
+}
+
+@keyframes fadeInDelayed {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
