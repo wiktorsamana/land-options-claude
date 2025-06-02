@@ -81,7 +81,7 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted, earnedDate, c
               ? 'bg-gradient-to-br from-yellow-200/80 to-yellow-300/80 border-yellow-500 shadow-lg backdrop-blur-sm border-solid animate-pulse cursor-pointer' 
               : isOwned 
                 ? 'bg-gradient-to-br from-green-200/70 to-green-300/70 border-green-400 shadow-lg backdrop-blur-sm' 
-                : 'bg-gradient-to-br from-gray-100/40 to-gray-200/40 hover:from-blue-100/60 hover:to-blue-200/60 backdrop-blur-sm border-dashed border-gray-400'
+                : 'bg-transparent hover:bg-blue-100/20 backdrop-blur-sm border-dashed border-gray-400'
             }
           `}
         >
