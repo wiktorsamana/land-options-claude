@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import './LandGameApp.css';
 
 // Import services
@@ -28,7 +29,6 @@ export default function LandGameApp() {
   
   const [gameData, setGameData] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
-  const [showCelebration, setShowCelebration] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [claimingReward, setClaimingReward] = useState(null);
   const [error, setError] = useState(null);
@@ -36,6 +36,7 @@ export default function LandGameApp() {
   const [currentUserId, setCurrentUserId] = useState(userIdFromUrl || "employee_001"); // Use URL param or default
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0);
+  const [claimMode, setClaimMode] = useState(null); // Stores the reward type being claimed
 
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
@@ -118,6 +119,16 @@ export default function LandGameApp() {
   };
 
   const handleSquareClick = (x, y) => {
+    // If in claim mode and square is available, claim it
+    if (claimMode) {
+      const isOwned = gameData.ownedSquares.some(sq => sq.x === x && sq.y === y);
+      if (!isOwned) {
+        handleClaimToSquare(x, y, claimMode);
+      }
+      return;
+    }
+    
+    // Normal selection behavior
     setSelectedSquare({ x, y });
   };
 
@@ -131,31 +142,39 @@ export default function LandGameApp() {
     const wholeUnits = Math.floor(reward.count);
     if (wholeUnits <= 0) return;
 
+    // Check if there are available squares
+    const availableSquares = [];
+    for (let y = 0; y < 5; y++) {
+      for (let x = 0; x < 5; x++) {
+        const isOwned = gameData.ownedSquares.some(sq => sq.x === x && sq.y === y);
+        if (!isOwned) availableSquares.push({ x, y });
+      }
+    }
+
+    if (availableSquares.length === 0) {
+      alert('No available squares left! You\'ve completed your land parcel! 🎉');
+      return;
+    }
+
+    // Enter claim mode
+    setClaimMode(rewardType);
+    setSelectedSquare(null); // Clear any existing selection
+  };
+
+  const handleClaimToSquare = async (x, y, rewardType) => {
+    if (!gameData || claimingReward) return;
+    
+    const reward = gameData.availableRewards.find(r => r.type === rewardType);
+    if (!reward || reward.count <= 0) return;
+
     try {
       setClaimingReward(rewardType);
-
-      // Find next available square
-      const findNextSquare = () => {
-        for (let y = 0; y < 5; y++) {
-          for (let x = 0; x < 5; x++) {
-            const isOwned = gameData.ownedSquares.some(sq => sq.x === x && sq.y === y);
-            if (!isOwned) return { x, y };
-          }
-        }
-        return null;
-      };
-
-      const nextSquare = findNextSquare();
-      if (!nextSquare) {
-        alert('No available squares left! You\'ve completed your land parcel! 🎉');
-        return;
-      }
 
       // Claim the land square
       const newSquare = await dataService.claimLandSquare(
         currentUserId, 
-        nextSquare.x, 
-        nextSquare.y, 
+        x, 
+        y, 
         rewardType
       );
 
@@ -176,9 +195,8 @@ export default function LandGameApp() {
         nextParcelProgress: prev.nextParcelProgress + 1
       }));
 
-      // Show celebration
-      setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 2000);
+      // Show fireworks celebration
+      triggerFireworks();
       
       // Check if parcel is complete
       if (gameData.ownedSquares.length + 1 === 25) {
@@ -192,7 +210,45 @@ export default function LandGameApp() {
       setError('Failed to claim reward. Please try again.');
     } finally {
       setClaimingReward(null);
+      setClaimMode(null); // Exit claim mode
     }
+  };
+
+  const cancelClaimMode = () => {
+    setClaimMode(null);
+    setSelectedSquare(null);
+  };
+
+  const triggerFireworks = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      
+      // Left side fireworks
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: randomInRange(0.2, 0.8) }
+      });
+      
+      // Right side fireworks
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: randomInRange(0.2, 0.8) }
+      });
+    }, 250);
   };
 
   if (isLoading) {
@@ -241,17 +297,6 @@ export default function LandGameApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
-      {/* Celebration Modal */}
-      {showCelebration && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-8 text-center animate-bounce">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-green-600 mb-2">Land Claimed!</h2>
-            <p className="text-gray-600">Your Parcel is growing!</p>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -395,6 +440,28 @@ export default function LandGameApp() {
                 </div>
               </div>
               
+              {/* Claim Mode Instructions */}
+              {claimMode && (
+                <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-yellow-800 mb-1">
+                        🎯 Select a square to claim your {claimMode}
+                      </h3>
+                      <p className="text-xs text-yellow-700">
+                        Click on any available (glowing) square to place your land reward
+                      </p>
+                    </div>
+                    <button
+                      onClick={cancelClaimMode}
+                      className="px-3 py-1 text-xs bg-yellow-200 text-yellow-800 rounded hover:bg-yellow-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* 5x5 Grid */}
               <div className="land-map-container p-6 rounded-lg relative overflow-hidden shadow-xl">
                 {/* Removed overlay to show plain image */}
@@ -426,6 +493,8 @@ export default function LandGameApp() {
                         earnedDate={ownedSquare?.earnedDate}
                         onClick={handleSquareClick}
                         isHighlighted={selectedSquare?.x === x && selectedSquare?.y === y}
+                        claimMode={claimMode}
+                        isClaimable={claimMode && !ownedSquare}
                       />
                     );
                   })}

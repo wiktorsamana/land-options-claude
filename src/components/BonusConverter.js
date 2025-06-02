@@ -1,6 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Calculator, TrendingUp, ArrowRight, DollarSign, MapPin, AlertCircle } from 'lucide-react';
 
+// Fireworks component
+const Fireworks = ({ show }) => {
+  if (!show) return null;
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      <style jsx>{`
+        @keyframes firework1 {
+          0% { opacity: 1; transform: scale(0) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1) rotate(180deg); }
+          100% { opacity: 0; transform: scale(1.2) rotate(360deg); }
+        }
+        @keyframes firework2 {
+          0% { opacity: 1; transform: scale(0) rotate(0deg); }
+          40% { opacity: 1; transform: scale(0.8) rotate(120deg); }
+          100% { opacity: 0; transform: scale(1.5) rotate(240deg); }
+        }
+        @keyframes firework3 {
+          0% { opacity: 1; transform: scale(0) rotate(0deg); }
+          60% { opacity: 1; transform: scale(1.1) rotate(300deg); }
+          100% { opacity: 0; transform: scale(1.8) rotate(720deg); }
+        }
+        .firework {
+          position: absolute;
+          font-size: 2rem;
+          animation-duration: 2s;
+          animation-timing-function: ease-out;
+          animation-fill-mode: forwards;
+        }
+        .firework-1 { animation-name: firework1; color: #ff6b6b; top: 20%; left: 20%; }
+        .firework-2 { animation-name: firework2; color: #4ecdc4; top: 30%; right: 25%; animation-delay: 0.3s; }
+        .firework-3 { animation-name: firework3; color: #45b7d1; top: 60%; left: 30%; animation-delay: 0.6s; }
+        .firework-4 { animation-name: firework1; color: #96ceb4; top: 50%; right: 30%; animation-delay: 0.9s; }
+        .firework-5 { animation-name: firework2; color: #ffd93d; top: 70%; left: 60%; animation-delay: 1.2s; }
+        .firework-6 { animation-name: firework3; color: #ff9ff3; top: 40%; left: 70%; animation-delay: 1.5s; }
+      `}</style>
+      <div className="firework firework-1">🎆</div>
+      <div className="firework firework-2">✨</div>
+      <div className="firework firework-3">🎇</div>
+      <div className="firework firework-4">💫</div>
+      <div className="firework firework-5">🌟</div>
+      <div className="firework firework-6">⭐</div>
+    </div>
+  );
+};
+
 const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
   const [pendingBonus, setPendingBonus] = useState(1000); // Default $1000
   const [conversionMultiplier] = useState(2); // 2x multiplier
@@ -8,6 +54,7 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
   const [isConverting, setIsConverting] = useState(false);
   const [conversionResult, setConversionResult] = useState(null);
   const [error, setError] = useState(null);
+  const [showFireworks, setShowFireworks] = useState(false);
 
   // Calculate conversion details
   const landValue = pendingBonus * conversionMultiplier;
@@ -34,6 +81,10 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
         squaresEarned: squaresEarned,
         remainingCash: remainingCash
       });
+
+      // Trigger fireworks animation
+      setShowFireworks(true);
+      setTimeout(() => setShowFireworks(false), 3000); // Hide after 3 seconds
 
       // Reset pending bonus to remaining cash
       setPendingBonus(remainingCash);
@@ -165,14 +216,27 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
 
         {/* Conversion Result */}
         {conversionResult && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-green-800 mb-2">✅ Conversion Successful!</h4>
-            <p className="text-sm text-green-700">
-              You converted ${conversionResult.originalBonus.toLocaleString()} into {conversionResult.squaresEarned} land squares.
-              {conversionResult.remainingCash > 0 && (
-                <span> You have ${conversionResult.remainingCash.toFixed(2)} remaining in cash bonus.</span>
-              )}
-            </p>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 relative overflow-hidden">
+            <div className="relative z-10">
+              <h4 className="font-semibold text-green-800 mb-2 flex items-center">
+                <span className="text-2xl mr-2">🎉</span>
+                Conversion Successful!
+                <span className="text-2xl ml-2">🎉</span>
+              </h4>
+              <p className="text-sm text-green-700 font-medium">
+                🌟 You converted ${conversionResult.originalBonus.toLocaleString()} into {conversionResult.squaresEarned} land squares! 🌟
+                {conversionResult.remainingCash > 0 && (
+                  <span className="block mt-1"> 💰 You have ${conversionResult.remainingCash.toFixed(2)} remaining in cash bonus.</span>
+                )}
+              </p>
+              <div className="mt-3 flex items-center justify-center space-x-2">
+                <span className="text-3xl animate-bounce">🌴</span>
+                <span className="text-lg font-bold text-green-800">
+                  +{conversionResult.squaresEarned} Jungle Plot Squares Added!
+                </span>
+                <span className="text-3xl animate-bounce" style={{ animationDelay: '0.1s' }}>🌴</span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -206,6 +270,9 @@ const BonusConverter = ({ userId, dataService, onConversionComplete }) => {
           <p>By converting your bonus to land, you're investing in your future with a {conversionMultiplier}x value multiplier!</p>
         </div>
       </div>
+
+      {/* Fireworks Animation */}
+      <Fireworks show={showFireworks} />
     </div>
   );
 };

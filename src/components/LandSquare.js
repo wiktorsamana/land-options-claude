@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted, earnedDate }) => {
+const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted, earnedDate, claimMode, isClaimable }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const getSquareContent = () => {
     if (!isOwned) return null;
@@ -21,6 +21,16 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted, earnedDate })
 
   const handleClick = (e) => {
     e.stopPropagation();
+    
+    // If in claim mode and this square is claimable, don't flip - just claim
+    if (isClaimable) {
+      if (onClick) {
+        onClick(x, y);
+      }
+      return;
+    }
+    
+    // Normal flip behavior for non-claim mode
     console.log('Square clicked:', x, y, 'current flip state:', isFlipped);
     setIsFlipped(prev => !prev);
     if (onClick) {
@@ -66,10 +76,12 @@ const LandSquare = ({ x, y, isOwned, type, onClick, isHighlighted, earnedDate })
         <div
           className={`
             absolute inset-0 w-full h-full border-2 rounded-lg transition-all duration-300 backface-hidden
-            hover:scale-105
-            ${isOwned 
-              ? 'bg-gradient-to-br from-green-200/70 to-green-300/70 border-green-400 shadow-lg backdrop-blur-sm' 
-              : 'bg-gradient-to-br from-gray-100/40 to-gray-200/40 hover:from-blue-100/60 hover:to-blue-200/60 backdrop-blur-sm border-dashed border-gray-400'
+            ${!isClaimable ? 'hover:scale-105' : ''}
+            ${isClaimable 
+              ? 'bg-gradient-to-br from-yellow-200/80 to-yellow-300/80 border-yellow-500 shadow-lg backdrop-blur-sm border-solid animate-pulse cursor-pointer' 
+              : isOwned 
+                ? 'bg-gradient-to-br from-green-200/70 to-green-300/70 border-green-400 shadow-lg backdrop-blur-sm' 
+                : 'bg-gradient-to-br from-gray-100/40 to-gray-200/40 hover:from-blue-100/60 hover:to-blue-200/60 backdrop-blur-sm border-dashed border-gray-400'
             }
           `}
         >
