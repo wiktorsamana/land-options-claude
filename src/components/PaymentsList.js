@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, ArrowRight, Calendar, Tag, CheckCircle, AlertCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, ArrowRight, Calendar, Tag, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
   const [payments, setPayments] = useState([]);
@@ -7,6 +7,9 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
   const [error, setError] = useState(null);
   const [convertingPaymentId, setConvertingPaymentId] = useState(null);
   const [conversionResults, setConversionResults] = useState({});
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState(null);
   
   const conversionMultiplier = 2;
   const squareValue = 2000;
@@ -31,28 +34,41 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
 
   const calculateConversion = (amount) => {
     const landValue = amount * conversionMultiplier;
-    const squaresEarned = Math.floor(landValue / squareValue);
-    const remainingValue = landValue % squareValue;
-    const remainingCash = remainingValue / conversionMultiplier;
+    const squaresEarned = landValue / squareValue; // Now allows decimals
+    const wholeSquares = Math.floor(squaresEarned);
+    const decimalSquares = squaresEarned - wholeSquares;
     
     return {
       landValue,
-      squaresEarned,
-      remainingCash
+      squaresEarned: squaresEarned, // Total with decimals (e.g., 1.25)
+      wholeSquares: wholeSquares, // Only whole units (e.g., 1)
+      decimalSquares: decimalSquares, // Decimal portion (e.g., 0.25)
+      remainingCash: 0 // No remaining cash - everything converts
     };
   };
 
-  const handleConvertPayment = async (payment) => {
+  const handleConvertClick = (payment) => {
+    setPendingPayment(payment);
+    setShowDisclaimer(true);
+    setDisclaimerAccepted(false);
+  };
+
+  const handleConvertPayment = async () => {
+    if (!pendingPayment || !disclaimerAccepted) return;
+    
+    const payment = pendingPayment;
     const conversion = calculateConversion(payment.amount);
     
-    if (conversion.squaresEarned < 1) {
-      alert('This payment amount is too small to convert. Minimum: $1000');
+    // No minimum anymore - even small amounts can convert to decimal units
+    if (payment.amount <= 0) {
+      alert('Invalid payment amount');
       return;
     }
 
     try {
       setConvertingPaymentId(payment.id);
       setError(null);
+      setShowDisclaimer(false);
 
       // Convert the payment
       await dataService.convertPaymentToLand(
@@ -85,6 +101,7 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
       setError(`Failed to convert payment: ${err.message}`);
     } finally {
       setConvertingPaymentId(null);
+      setPendingPayment(null);
     }
   };
 
@@ -142,8 +159,9 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
             <ul className="list-disc list-inside space-y-1">
               <li><span className="font-bold text-green-600">2X MULTIPLIER</span> on all conversions (100% bonus!)</li>
               <li>Each palm tree square costs ${squareValue.toLocaleString()} in land value</li>
-              <li>Example: $1,000 cash → $2,000 land value → 1 square</li>
-              <li>Minimum conversion: $1,000</li>
+              <li>Example: $10 cash → $20 land value → 0.01 squares</li>
+              <li>You accumulate decimal squares but can only claim whole units</li>
+              <li>No minimum amount - convert any amount!</li>
             </ul>
           </div>
         </div>
@@ -201,13 +219,14 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
                         </span>
                         <span className="text-gray-400">=</span>
                         <span className="font-bold text-blue-600 text-lg">
-                          {conversion.squaresEarned} 🌴
+                          {conversion.squaresEarned.toFixed(2)} 🌴
                         </span>
                       </div>
                     </div>
-                    {conversion.remainingCash > 0 && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Remaining cash: ${conversion.remainingCash.toFixed(2)}
+                    {conversion.decimalSquares > 0 && (
+                      <p className="text-xs text-gray-600 mt-1">
+                        <span className="font-semibold">{conversion.wholeSquares}</span> claimable squares + 
+                        <span className="text-orange-600 font-semibold"> {conversion.decimalSquares.toFixed(2)}</span> partial square
                       </p>
                     )}
                   </div>
@@ -222,10 +241,10 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleConvertPayment(payment)}
-                      disabled={convertingPaymentId === payment.id || conversion.squaresEarned < 1}
+                      onClick={() => handleConvertClick(payment)}
+                      disabled={convertingPaymentId === payment.id || conversion.squaresEarned <= 0}
                       className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                        conversion.squaresEarned >= 1
+                        conversion.squaresEarned > 0
                           ? 'bg-green-600 text-white hover:bg-green-700 transform hover:scale-105'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
@@ -238,7 +257,7 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
                       ) : (
                         <span className="flex items-center">
                           <TrendingUp className="w-4 h-4 mr-2" />
-                          Convert
+                          Convert to land
                         </span>
                       )}
                     </button>
@@ -274,11 +293,132 @@ const PaymentsList = ({ userId, dataService, onPaymentConverted }) => {
           <div className="flex items-center justify-between border-t pt-3">
             <span className="text-gray-700 font-semibold">Total land squares:</span>
             <span className="font-bold text-2xl text-green-600">
-              {payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0)} 🌴
+              {payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0).toFixed(2)} 🌴
             </span>
+          </div>
+          <div className="text-center text-xs text-gray-600 mt-2">
+            <span className="font-semibold">
+              {Math.floor(payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0))}
+            </span> whole squares claimable + 
+            <span className="text-orange-600 font-semibold">
+              {' '}{(payments.reduce((sum, p) => sum + calculateConversion(p.amount).squaresEarned, 0) % 1).toFixed(2)}
+            </span> partial
           </div>
         </div>
       </div>
+
+      {/* Disclaimer Modal */}
+      {showDisclaimer && pendingPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-800">Employee Conversion Plan Agreement</h3>
+                <button
+                  onClick={() => {
+                    setShowDisclaimer(false);
+                    setPendingPayment(null);
+                    setDisclaimerAccepted(false);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Conversion Details */}
+              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-gray-800 mb-2">Conversion Summary:</h4>
+                <div className="text-sm space-y-1">
+                  <p><span className="text-gray-600">Payment:</span> <span className="font-semibold">{pendingPayment.description}</span></p>
+                  <p><span className="text-gray-600">Amount:</span> <span className="font-semibold">${pendingPayment.amount.toLocaleString()}</span></p>
+                  <p><span className="text-gray-600">Land Value (2x):</span> <span className="font-semibold text-green-600">${(pendingPayment.amount * 2).toLocaleString()}</span></p>
+                  <p><span className="text-gray-600">Squares Earned:</span> <span className="font-semibold text-blue-600">{calculateConversion(pendingPayment.amount).squaresEarned.toFixed(2)} 🌴</span></p>
+                </div>
+              </div>
+
+              {/* Disclaimer Text */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-800 mb-3">Important Notice:</h4>
+                <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 space-y-3">
+                  <p>
+                    By converting your bonus payment to land squares, you are participating in the Employee Land Conversion Plan. 
+                    This action is <span className="font-semibold">final and cannot be reversed</span>.
+                  </p>
+                  <p>
+                    The converted amount will be allocated as land squares in your virtual land portfolio with a 
+                    <span className="font-semibold text-green-600"> 2x multiplier benefit</span>. 
+                    Only whole squares can be claimed on the land map, but decimal squares will be tracked in your account.
+                  </p>
+                  <p>
+                    Please review the complete terms and conditions of the Employee Land Conversion Plan before proceeding.
+                  </p>
+                  <p>
+                    <a 
+                      href="https://example.com/employee-land-conversion-terms" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                    >
+                      Read Full Terms and Conditions →
+                    </a>
+                  </p>
+                </div>
+              </div>
+
+              {/* Checkbox */}
+              <div className="mb-6">
+                <label className="flex items-start cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={disclaimerAccepted}
+                    onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                    className="mt-1 mr-3 h-5 w-5 text-green-600 rounded border-gray-300 focus:ring-green-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    I have read and agree to the{' '}
+                    <a 
+                      href="https://example.com/employee-land-conversion-terms" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Employee Land Conversion Plan Terms and Conditions
+                    </a>
+                    . I understand that this conversion is final and cannot be reversed.
+                  </span>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDisclaimer(false);
+                    setPendingPayment(null);
+                    setDisclaimerAccepted(false);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConvertPayment}
+                  disabled={!disclaimerAccepted}
+                  className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+                    disclaimerAccepted
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Confirm Conversion
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

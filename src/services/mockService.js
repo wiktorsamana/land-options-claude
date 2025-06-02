@@ -188,6 +188,11 @@ class MockService {
   async getUserPendingPayments(userId) {
     await this.delay(300);
     
+    // Initialize converted payments tracking if not exists
+    if (!this.convertedPayments) {
+      this.convertedPayments = new Set();
+    }
+    
     // Return mock pending payments
     const mockPayments = [
       {
@@ -196,7 +201,7 @@ class MockService {
         amount: 1000,
         description: 'Q4 Performance Bonus',
         paymentDate: '2024-01-15',
-        status: 'pending',
+        status: this.convertedPayments.has('pay_001') ? 'converted' : 'pending',
         type: 'bonus'
       },
       {
@@ -205,7 +210,7 @@ class MockService {
         amount: 2500,
         description: 'Project Completion Bonus',
         paymentDate: '2024-01-10',
-        status: 'pending',
+        status: this.convertedPayments.has('pay_002') ? 'converted' : 'pending',
         type: 'bonus'
       },
       {
@@ -214,13 +219,13 @@ class MockService {
         amount: 750,
         description: 'Referral Bonus',
         paymentDate: '2024-01-05',
-        status: 'pending',
+        status: this.convertedPayments.has('pay_003') ? 'converted' : 'pending',
         type: 'referral'
       }
     ];
     
-    // Filter to only show pending payments
-    return mockPayments.filter(p => p.status === 'pending');
+    // Filter to only show pending payments (not converted)
+    return mockPayments.filter(p => p.status !== 'converted');
   }
 
   async convertPaymentToLand(paymentId, userId, landType, squaresEarned) {
@@ -231,7 +236,12 @@ class MockService {
     // Add the land rewards
     await this.addReward(userId, landType, squaresEarned);
     
-    // In real implementation, this would update the payment status
+    // Track converted payment
+    if (!this.convertedPayments) {
+      this.convertedPayments = new Set();
+    }
+    this.convertedPayments.add(paymentId);
+    
     console.log('✅ [MOCK] Payment converted successfully');
     return true;
   }

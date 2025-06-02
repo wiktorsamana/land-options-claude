@@ -559,7 +559,7 @@ class AirtableService {
       const paymentsTable = base('Pending Payments');
       
       const records = await paymentsTable.select({
-        filterByFormula: `{user_id} = '${userId}'`,
+        filterByFormula: `AND({user_id} = '${userId}', {status} != 'converted')`,
         sort: [{ field: 'payment_date', direction: 'desc' }]
       }).all();
       
