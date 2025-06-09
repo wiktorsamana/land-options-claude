@@ -339,10 +339,7 @@ export default function LandGameApp() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">🏞️ Land Empire</h1>
-          <p className="text-lg text-gray-600">Collect land, build your Parcel, earn rewards!</p>
-          
+          <div className="text-center mb-8">
           {/* User Selector and Admin Button */}
           {!hideControls && (
             <div className="mt-6 flex justify-center items-center space-x-4">
@@ -361,16 +358,6 @@ export default function LandGameApp() {
                 <Settings className="w-4 h-4" />
                 <span className="hidden sm:inline">Admin</span>
               </button>
-              
-              {/* Bonus Converter Link */}
-              <a
-                href={`/bonus-converter?userId=${currentUserId}`}
-                className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 shadow-md"
-                title="Convert Bonus / Invoices to Land"
-              >
-                <Trophy className="w-4 h-4" />
-                <span className="hidden sm:inline">Convert Bonus / Invoice</span>
-              </a>
               
               {/* Investor Converter Link */}
               <a
@@ -574,6 +561,34 @@ export default function LandGameApp() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+
+            {/* Convert Bonus Section */}
+            {!hideControls && (
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="flex items-center mb-3">
+                  <Trophy className="w-5 h-5 text-green-500 mr-2" />
+                  <h3 className="text-xl font-bold text-gray-800">Convert Bonuses</h3>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-4">
+                  Transform your employee bonuses and paid invoices into valuable land squares. 
+                  Get a 2x multiplier on all conversions!
+                </p>
+                
+                <a
+                  href={`/bonus-converter?userId=${currentUserId}`}
+                  className="block w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 shadow-sm"
+                  title="Convert Bonus / Invoices to Land"
+                >
+                  <Trophy className="w-4 h-4" />
+                  <span>Convert Bonus / Invoice</span>
+                </a>
+                
+                <div className="mt-3 text-xs text-gray-500 text-center">
+                  💡 Tip: $1000 bonus = 2000$ land value = 1 square
+                </div>
+              </div>
+            )}
 
             {/* Available Rewards */}
             <div className="bg-white rounded-xl shadow-lg p-6">
