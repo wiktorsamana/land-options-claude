@@ -104,6 +104,35 @@ class AirtableService {
     }
   }
 
+  async getUserByEmail(email) {
+    if (!this.isConnected) {
+      throw new Error('Airtable not configured');
+    }
+
+    try {
+      const records = await this.usersTable.select({
+        filterByFormula: `{email} = '${email}'`,
+        maxRecords: 1
+      }).firstPage();
+      
+      if (records.length === 0) {
+        return null;
+      }
+      
+      return {
+        id: records[0].id,
+        userId: records[0].fields.user_id,
+        name: records[0].fields.name,
+        email: records[0].fields.email,
+        streakDays: records[0].fields.streak_days || 0,
+        totalEarnings: records[0].fields.total_earnings || 0
+      };
+    } catch (error) {
+      console.error('Error fetching user by email:', error);
+      throw error;
+    }
+  }
+
   async createUser(userData) {
     if (!this.isConnected) {
       throw new Error('Airtable not configured');

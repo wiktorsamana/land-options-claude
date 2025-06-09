@@ -60,6 +60,18 @@ class MockService {
     return user;
   }
 
+  async getUserByEmail(email) {
+    await this.delay(300);
+    
+    // Find user by email
+    const user = Object.values(this.users).find(u => u.email === email);
+    if (!user) {
+      return null;
+    }
+    
+    return user;
+  }
+
   async createUser(userData) {
     await this.delay(500);
     

@@ -53,14 +53,56 @@ const Fireworks = ({ show }) => {
 const BonusConverterPage = () => {
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
-  const userIdFromUrl = urlParams.get('userId') || 'employee_001';
+  const userIdFromUrl = urlParams.get('userId');
+  const emailFromUrl = urlParams.get('email');
   
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [totalSquaresConverted, setTotalSquaresConverted] = useState(0);
   const [lastConversion, setLastConversion] = useState(null);
   const [showFireworks, setShowFireworks] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
+
+  // Initialize user from URL parameters
+  useEffect(() => {
+    const initializeUser = async () => {
+      if (emailFromUrl) {
+        // Try to find user by email
+        try {
+          const user = await dataService.getUserByEmail(emailFromUrl);
+          if (user) {
+            setCurrentUserId(user.userId);
+            setCurrentUserEmail(user.email);
+          } else {
+            console.error(`User with email ${emailFromUrl} not found`);
+            setCurrentUserId('employee_001'); // Fallback
+          }
+        } catch (err) {
+          console.error('Error finding user by email:', err);
+          setCurrentUserId('employee_001'); // Fallback
+        }
+      } else if (userIdFromUrl) {
+        setCurrentUserId(userIdFromUrl);
+        // Try to get email for this user
+        try {
+          const user = await dataService.getUser(userIdFromUrl);
+          if (user) {
+            setCurrentUserEmail(user.email);
+          }
+        } catch (err) {
+          console.error('Error getting user details:', err);
+        }
+      } else {
+        setCurrentUserId('employee_001'); // Default
+      }
+      setIsLoading(false);
+    };
+
+    initializeUser();
+  }, [emailFromUrl, userIdFromUrl, dataService]);
 
   const handlePaymentConverted = (payment, squaresEarned) => {
     setTotalSquaresConverted(prev => prev + squaresEarned);
@@ -76,8 +118,12 @@ const BonusConverterPage = () => {
   };
 
   const handleBackToGame = () => {
-    // Navigate back to main game with the same userId
-    window.location.href = `/?userId=${userIdFromUrl}`;
+    // Navigate back to main game with email parameter if available
+    if (currentUserEmail) {
+      window.location.href = `/?email=${encodeURIComponent(currentUserEmail)}`;
+    } else {
+      window.location.href = `/?userId=${currentUserId}`;
+    }
   };
 
   return (
@@ -128,17 +174,19 @@ const BonusConverterPage = () => {
           </div>
 
           {/* Payments List */}
-          <PaymentsList 
-            userId={userIdFromUrl}
-            dataService={dataService}
-            onPaymentConverted={handlePaymentConverted}
-          />
+          {!isLoading && currentUserId && (
+            <PaymentsList 
+              userId={currentUserId}
+              dataService={dataService}
+              onPaymentConverted={handlePaymentConverted}
+            />
+          )}
         </div>
       </div>
 
       {/* Footer Info */}
       <div className="max-w-4xl mx-auto mt-8 text-center text-sm text-gray-600">
-        <p>Converting payments for: <span className="font-semibold">{userIdFromUrl}</span></p>
+        <p>Converting payments for: <span className="font-semibold">{currentUserEmail || currentUserId || 'Loading...'}</span></p>
         <p className="mt-2">
           After conversion, return to the{' '}
           <button

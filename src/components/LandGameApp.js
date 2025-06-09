@@ -25,6 +25,7 @@ export default function LandGameApp() {
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const userIdFromUrl = urlParams.get('userId');
+  const emailFromUrl = urlParams.get('email');
   const hideControls = urlParams.get('hideControls') === 'true';
   
   const [gameData, setGameData] = useState(null);
@@ -33,28 +34,67 @@ export default function LandGameApp() {
   const [claimingReward, setClaimingReward] = useState(null);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(userIdFromUrl || "employee_001"); // Use URL param or default
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0);
   const [claimMode, setClaimMode] = useState(null); // Stores the reward type being claimed
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
   const isUsingMockData = !airtableService.isAirtableConnected();
 
-  // Load initial data
+  // Initialize user from URL parameters
   useEffect(() => {
-    loadGameData();
-  }, [currentUserId]); // Reload when user changes
+    const initializeUser = async () => {
+      if (emailFromUrl) {
+        // Try to find user by email
+        try {
+          const user = await dataService.getUserByEmail(emailFromUrl);
+          if (user) {
+            setCurrentUserId(user.userId);
+          } else {
+            setError(`User with email ${emailFromUrl} not found`);
+            setCurrentUserId("employee_001"); // Fallback
+          }
+        } catch (err) {
+          console.error('Error finding user by email:', err);
+          setCurrentUserId("employee_001"); // Fallback
+        }
+      } else if (userIdFromUrl) {
+        setCurrentUserId(userIdFromUrl);
+      } else {
+        setCurrentUserId("employee_001"); // Default
+      }
+      setInitialLoadComplete(true);
+    };
+
+    initializeUser();
+  }, [emailFromUrl, userIdFromUrl]); // Only run once on mount
+
+  // Load game data when user is set
+  useEffect(() => {
+    if (currentUserId && initialLoadComplete) {
+      loadGameData();
+    }
+  }, [currentUserId, initialLoadComplete]); // Reload when user changes
   
-  // Update URL when user changes (optional)
+  // Update URL when user changes
   useEffect(() => {
-    if (currentUserId && currentUserId !== userIdFromUrl) {
+    if (currentUserId && gameData) {
       const newUrl = new URL(window.location);
-      newUrl.searchParams.set('userId', currentUserId);
+      // Clear both parameters first
+      newUrl.searchParams.delete('userId');
+      newUrl.searchParams.delete('email');
+      // Set email parameter (preferred over userId)
+      if (gameData.currentUser && gameData.currentUser.email) {
+        newUrl.searchParams.set('email', gameData.currentUser.email);
+      } else {
+        newUrl.searchParams.set('userId', currentUserId);
+      }
       window.history.pushState({}, '', newUrl);
     }
-  }, [currentUserId, userIdFromUrl]);
+  }, [currentUserId, gameData]);
 
   const handleUserChange = (newUserId) => {
     setCurrentUserId(newUserId);
