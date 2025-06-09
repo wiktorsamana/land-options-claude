@@ -370,8 +370,7 @@ export default function LandGameApp() {
               </a>
             </div>
           )}
-          
-          {/* Connection Status */}
+          {!hideControls && (
           <div className="mt-4 flex justify-center space-x-4">
             <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
               isUsingMockData 
@@ -388,6 +387,7 @@ export default function LandGameApp() {
               📊 {completionPercentage}% Complete
             </div>
           </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -415,57 +415,6 @@ export default function LandGameApp() {
                   </button>
                 </div>
               </div> */}
-              
-              {/* Land Stats */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center mb-3">
-                  <Users className="w-5 h-5 text-blue-500 mr-2" />
-                  <h3 className="text-lg font-bold text-gray-800">Land Stats</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <span className="text-sm text-gray-600">Employee</span>
-                    <p className="font-semibold">{gameData.userName}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Earned Land partials</span>
-                    <p className="font-semibold text-green-600">{ownedSquaresCount} squares</p>
-                    <p className="text-xs text-gray-500">
-                      Value: ${Math.round((ownedSquaresCount / 25) * gameData.totalEarnings).toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Market plot value</span>
-                    <p className="font-semibold text-yellow-600">${gameData.totalEarnings}</p>
-                  </div>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="mt-4">
-                  <ProgressBar 
-                    current={ownedSquaresCount} 
-                    total={25} 
-                    label="Progress to Full Parcel"
-                    color="green"
-                  />
-                  
-                  {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
-                    <div className="text-center text-sm text-gray-600 mt-2">
-                      {gameData.userName}, you need {25 - ownedSquaresCount} more squares to complete your parcel! 🚀
-                    </div>
-                  )}
-                  
-                  {ownedSquaresCount === 25 && (
-                    <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
-                      <div className="text-2xl mb-1">🎉</div>
-                      <p className="text-sm font-semibold text-yellow-800">
-                        {gameData.userName} completed their land parcel!
-                      </p>
-                      <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
-                    </div>
-                  )}
-                </div>
-              </div>
               
               {/* Claim Mode Instructions */}
               {claimMode && (
@@ -539,6 +488,9 @@ export default function LandGameApp() {
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Full Parcel</p>
                     <p className="text-gray-600">25 squares = 300m² plot in NC3</p>
+                    <p className="text-yellow-600 font-semibold mt-1">
+                      Market value: ${gameData.totalEarnings.toLocaleString()}
+                    </p>
                   </div>
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Your Progress</p>
@@ -548,11 +500,40 @@ export default function LandGameApp() {
                     <p className="text-green-600 font-semibold">
                       {((ownedSquaresCount / 25) * 100).toFixed(0)}% complete
                     </p>
+                    <p className="text-blue-600 font-semibold mt-1">
+                      Value: ${Math.round((ownedSquaresCount / 25) * gameData.totalEarnings).toLocaleString()}
+                    </p>
                   </div>
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Each Square</p>
                     <p className="text-gray-600">1 square = 12m² of land</p>
                   </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="mt-4">
+                  <ProgressBar 
+                    current={ownedSquaresCount} 
+                    total={25} 
+                    label="Progress to Full Parcel"
+                    color="green"
+                  />
+                  
+                  {ownedSquaresCount > 0 && ownedSquaresCount < 25 && (
+                    <div className="text-center text-sm text-gray-600 mt-2">
+                      You need {25 - ownedSquaresCount} more squares to complete your parcel! 🚀
+                    </div>
+                  )}
+                  
+                  {ownedSquaresCount === 25 && (
+                    <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                      <div className="text-2xl mb-1">🎉</div>
+                      <p className="text-sm font-semibold text-yellow-800">
+                        {gameData.userName} completed their land parcel!
+                      </p>
+                      <p className="text-xs text-yellow-700">All 25 squares claimed!</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -563,7 +544,6 @@ export default function LandGameApp() {
           <div className="space-y-6">
 
             {/* Convert Bonus Section */}
-            {!hideControls && (
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center mb-3">
                   <Trophy className="w-5 h-5 text-green-500 mr-2" />
@@ -588,7 +568,6 @@ export default function LandGameApp() {
                   💡 Tip: $1000 bonus = 2000$ land value = 1 square
                 </div>
               </div>
-            )}
 
             {/* Available Rewards */}
             <div className="bg-white rounded-xl shadow-lg p-6">
