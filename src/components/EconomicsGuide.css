@@ -1,0 +1,159 @@
+/* Economics Guide Animations and Styles */
+
+/* Fade in animation for modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale up animation for modal content */
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Slide animation for page transitions */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Apply animations */
+.economics-guide-backdrop {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.economics-guide-modal {
+  animation: scaleUp 0.3s ease-out;
+}
+
+.economics-guide-page {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.economics-guide-page.prev {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* Icon animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.economics-guide-icon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Progress bar animation */
+@keyframes progressFill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--progress-width);
+  }
+}
+
+.economics-guide-progress {
+  animation: progressFill 0.5s ease-out;
+}
+
+/* Hover effects */
+.economics-guide-button {
+  transition: all 0.2s ease;
+}
+
+.economics-guide-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Value card animations */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.value-card {
+  animation: countUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.value-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.value-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.value-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Land type list animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.land-type-item {
+  animation: slideDown 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+.land-type-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.land-type-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.land-type-item:nth-child(3) {
+  animation-delay: 0.3s;
+}

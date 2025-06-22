@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import { Trophy, MapPin, Gift, Zap, Target, Loader, RefreshCw, Users, Settings, Building2, ChevronLeft, ChevronRight, Lock, Info } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './LandGameApp.css';
 
@@ -13,6 +13,7 @@ import LandSquare from './LandSquare';
 import ProgressBar from './ProgressBar';
 import RewardCard from './RewardCard';
 import UserSelector from './UserSelector';
+import EconomicsGuide from './EconomicsGuide';
 
 // Debug credentials in development
 if (process.env.NODE_ENV === 'development') {
@@ -39,6 +40,7 @@ export default function LandGameApp() {
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0);
   const [claimMode, setClaimMode] = useState(null); // Stores the reward type being claimed
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [showEconomicsGuide, setShowEconomicsGuide] = useState(false);
 
   // Choose service based on Airtable configuration
   const dataService = airtableService.isAirtableConnected() ? airtableService : mockService;
@@ -78,6 +80,14 @@ export default function LandGameApp() {
       loadGameData();
     }
   }, [currentUserId, initialLoadComplete]); // Reload when user changes
+
+  // Check if guide should be shown on first visit
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem('hasSeenEconomicsGuide');
+    if (!hasSeenGuide && gameData) {
+      setShowEconomicsGuide(true);
+    }
+  }, [gameData]);
   
   // Update URL when user changes
   useEffect(() => {
@@ -335,6 +345,10 @@ export default function LandGameApp() {
   const ownedSquaresCount = gameData.ownedSquares.length;
   const completionPercentage = Math.round((ownedSquaresCount / 25) * 100);
 
+  const handleGuideComplete = () => {
+    localStorage.setItem('hasSeenEconomicsGuide', 'true');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
@@ -368,6 +382,16 @@ export default function LandGameApp() {
                 <Building2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Investor Portal</span>
               </a>
+              
+              {/* Economics Guide Button */}
+              <button
+                onClick={() => setShowEconomicsGuide(true)}
+                className="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 shadow-md"
+                title="Learn about Land Options Economics"
+              >
+                <Info className="w-4 h-4" />
+                <span className="hidden sm:inline">Economics Guide</span>
+              </button>
             </div>
           )}
           {!hideControls && (
@@ -867,6 +891,14 @@ export default function LandGameApp() {
           </div>
         )} */}
       </div>
+      
+      {/* Economics Guide Modal */}
+      {showEconomicsGuide && (
+        <EconomicsGuide 
+          onClose={() => setShowEconomicsGuide(false)}
+          onComplete={handleGuideComplete}
+        />
+      )}
     </div>
   );
 }
