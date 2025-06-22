@@ -12,47 +12,47 @@ const EconomicsGuide = ({ onClose, onComplete }) => {
       content: (
         <div className="space-y-4">
           <p className="text-lg text-gray-700">
-            Land Options transforms employee bonuses into a gamified ownership experience, 
-            creating long-term engagement and retention through virtual land acquisition.
+            Land Options transforms your bonuses into a gamified ownership experience, 
+            helping you build wealth through virtual land acquisition.
           </p>
           <div className="bg-green-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-green-800 mb-2">Key Innovation</h4>
+            <h4 className="font-semibold text-green-800 mb-2">Your Key Benefit</h4>
             <p className="text-green-700">
-              Employees receive 2x value when converting bonuses to land, incentivizing 
-              long-term thinking over immediate cash payouts.
+              You receive 2x value when converting bonuses to land - double your bonus 
+              value while building long-term wealth.
             </p>
           </div>
         </div>
       )
     },
     {
-      title: "The Economics Model",
+      title: "How It Works for You",
       icon: <Target className="w-16 h-16 text-blue-600 economics-guide-icon" />,
       content: (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg text-center value-card">
               <div className="text-2xl font-bold text-blue-800">$100</div>
-              <div className="text-sm text-blue-600">Bonus Value</div>
+              <div className="text-sm text-blue-600">Your Bonus</div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg text-center value-card">
               <div className="text-2xl font-bold text-green-800">$200</div>
-              <div className="text-sm text-green-600">Land Value</div>
+              <div className="text-sm text-green-600">Your Land Value</div>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg text-center value-card">
               <div className="text-2xl font-bold text-purple-800">2x</div>
-              <div className="text-sm text-purple-600">Multiplier</div>
+              <div className="text-sm text-purple-600">Your Multiplier</div>
             </div>
           </div>
           <p className="text-gray-700">
-            The 2x multiplier encourages employees to invest in the company's future, 
-            reducing immediate cash outflow while building engagement.
+            When you choose to convert your bonus to land, you instantly double its value. 
+            This helps you build a larger stake in your future while enjoying the game.
           </p>
         </div>
       )
     },
     {
-      title: "Land Types & Rewards",
+      title: "Your Land Rewards",
       icon: <Gift className="w-16 h-16 text-purple-600 economics-guide-icon" />,
       content: (
         <div className="space-y-4">
@@ -62,7 +62,7 @@ const EconomicsGuide = ({ onClose, onComplete }) => {
                 <div className="w-12 h-12 bg-green-200 rounded-lg flex items-center justify-center">🌴</div>
                 <div>
                   <span className="font-semibold text-lg">Jungle Plot</span>
-                  <p className="text-sm text-gray-600">Your first land reward type</p>
+                  <p className="text-sm text-gray-600">Your starting land type - collect these to build your parcel!</p>
                 </div>
               </div>
             </div>
@@ -72,13 +72,13 @@ const EconomicsGuide = ({ onClose, onComplete }) => {
                 <div className="text-4xl mb-3">🎁</div>
                 <h4 className="text-lg font-semibold text-gray-800 mb-2">More Benefits Coming Soon</h4>
                 <p className="text-sm text-gray-600">
-                  Additional land types and exclusive rewards will be unlocked as you progress
+                  As you progress, you'll unlock additional land types and exclusive rewards
                 </p>
               </div>
             </div>
           </div>
           <p className="text-sm text-gray-600 text-center mt-4">
-            Start collecting your jungle plots and build your virtual land empire!
+            Start collecting your jungle plots today and watch your virtual land empire grow!
           </p>
         </div>
       )
