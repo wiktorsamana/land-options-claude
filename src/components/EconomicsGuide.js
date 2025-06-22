@@ -52,69 +52,34 @@ const EconomicsGuide = ({ onClose, onComplete }) => {
       )
     },
     {
-      title: "Land Types & Value",
+      title: "Land Types & Rewards",
       icon: <Gift className="w-16 h-16 text-purple-600 economics-guide-icon" />,
       content: (
         <div className="space-y-4">
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg land-type-item">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-200 rounded flex items-center justify-center">🌴</div>
-                <span className="font-medium">Jungle Plot</span>
+            <div className="flex items-center p-4 bg-green-50 rounded-lg land-type-item">
+              <div className="flex items-center space-x-3 flex-1">
+                <div className="w-12 h-12 bg-green-200 rounded-lg flex items-center justify-center">🌴</div>
+                <div>
+                  <span className="font-semibold text-lg">Jungle Plot</span>
+                  <p className="text-sm text-gray-600">Your first land reward type</p>
+                </div>
               </div>
-              <span className="text-gray-600">$50 value</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg land-type-item">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-200 rounded flex items-center justify-center">🏠</div>
-                <span className="font-medium">Flathouse Mini</span>
+            
+            <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+              <div className="text-center">
+                <div className="text-4xl mb-3">🎁</div>
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">More Benefits Coming Soon</h4>
+                <p className="text-sm text-gray-600">
+                  Additional land types and exclusive rewards will be unlocked as you progress
+                </p>
               </div>
-              <span className="text-gray-600">$150 value</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg land-type-item">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-200 rounded flex items-center justify-center">🏢</div>
-                <span className="font-medium">Flathouse</span>
-              </div>
-              <span className="text-gray-600">$300 value</span>
             </div>
           </div>
-          <p className="text-sm text-gray-600">
-            Different land types represent varying levels of achievement and investment.
+          <p className="text-sm text-gray-600 text-center mt-4">
+            Start collecting your jungle plots and build your virtual land empire!
           </p>
-        </div>
-      )
-    },
-    {
-      title: "Benefits & ROI",
-      icon: <Users className="w-16 h-16 text-indigo-600 economics-guide-icon" />,
-      content: (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-indigo-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-indigo-800 mb-2">Employee Benefits</h4>
-              <ul className="text-sm text-indigo-700 space-y-1">
-                <li>• 2x bonus value</li>
-                <li>• Gamified experience</li>
-                <li>• Visual progress tracking</li>
-                <li>• Achievement milestones</li>
-              </ul>
-            </div>
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-orange-800 mb-2">Company Benefits</h4>
-              <ul className="text-sm text-orange-700 space-y-1">
-                <li>• Reduced cash outflow</li>
-                <li>• Increased retention</li>
-                <li>• Enhanced engagement</li>
-                <li>• Long-term alignment</li>
-              </ul>
-            </div>
-          </div>
-          <div className="bg-green-100 p-4 rounded-lg">
-            <p className="text-green-800 font-medium">
-              Expected ROI: 3-5x through improved retention and productivity
-            </p>
-          </div>
         </div>
       )
     }
