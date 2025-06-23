@@ -7,13 +7,13 @@ const EconomicsGuide = ({ onClose, onComplete }) => {
 
   const pages = [
     {
-      title: "Welcome to Land Options",
+      title: "Welcome to Nomad City Employee Parcels",
       icon: <TrendingUp className="w-16 h-16 text-green-600 economics-guide-icon" />,
       content: (
         <div className="space-y-4">
           <p className="text-lg text-gray-700">
-            Land Options transforms your bonuses into a gamified ownership experience, 
-            helping you build wealth through virtual land acquisition.
+            This system allows you to transform your bonuses into land parcels, 
+            helping you build wealth and your new place in Nomad City.
           </p>
           <div className="bg-green-50 p-4 rounded-lg">
             <h4 className="font-semibold text-green-800 mb-2">Your Key Benefit</h4>

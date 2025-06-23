@@ -149,7 +149,7 @@ const InvestorConverterPage = ({ dataService, onNavigateBack }) => {
               <p><span className="font-medium">Multiplier:</span> 2.0x</p>
               <p><span className="font-medium">Cost per Unit:</span> $1,000</p>
               <p><span className="font-medium">Minimum:</span> 25 units ($25,000)</p>
-              <p><span className="font-medium">Land Size:</span> 25 units = 300m²</p>
+              <p><span className="font-medium">Land Size:</span> 25 units = 400m²</p>
             </div>
           </div>
 

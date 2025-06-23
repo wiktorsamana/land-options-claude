@@ -460,9 +460,9 @@ export default function LandGameApp() {
                 <div className="relative z-10 max-w-md mx-auto">
                   {/* Plot boundary frame */}
                   <div className="absolute inset-0 border-3 border-dashed border-green-600/30 rounded-lg pointer-events-none">
-                    {/* 300 sqm label */}
+                    {/* 400 sqm label */}
                     <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 px-3 py-1 text-sm font-bold text-green-800 bg-gray-100/40 border border-green-600/30 rounded shadow-sm backdrop-blur-sm">
-                      300 sqm
+                      400 sqm
                     </div>
                   </div>
                   
@@ -509,7 +509,7 @@ export default function LandGameApp() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Full Parcel</p>
-                    <p className="text-gray-600">25 squares = 300m² plot in NC3</p>
+                    <p className="text-gray-600">25 squares = 400m² plot in NC3</p>
                     <p className="text-yellow-600 font-semibold mt-1">
                       Market value: ${gameData.totalEarnings.toLocaleString()}
                     </p>
@@ -517,7 +517,7 @@ export default function LandGameApp() {
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Your Progress</p>
                     <p className="text-gray-600">
-                      {ownedSquaresCount} squares = {Math.round((ownedSquaresCount / 25) * 300)}m²
+                      {ownedSquaresCount} squares = {Math.round((ownedSquaresCount / 25) * 400)}m²
                     </p>
                     <p className="text-green-600 font-semibold">
                       {((ownedSquaresCount / 25) * 100).toFixed(0)}% complete
@@ -528,7 +528,7 @@ export default function LandGameApp() {
                   </div>
                   <div className="bg-white p-3 rounded-lg shadow-sm text-center">
                     <p className="font-semibold text-gray-700 mb-1">Each Square</p>
-                    <p className="text-gray-600">1 square = 12m² of land</p>
+                    <p className="text-gray-600">1 square = 16m² of land</p>
                   </div>
                 </div>
                 
@@ -587,7 +587,7 @@ export default function LandGameApp() {
                 </a>
                 
                 <div className="mt-3 text-xs text-gray-500 text-center">
-                  💡 Tip: $1000 bonus = 2000$ land value = 1 square
+                  💡 Tip: $500 bonus = 1000$ land value = 1 square
                 </div>
               </div>
 

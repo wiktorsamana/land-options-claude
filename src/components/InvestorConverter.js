@@ -361,7 +361,7 @@ const InvestorConverter = ({ userId, dataService, onInvestmentConverted }) => {
                   <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
                     <h5 className="font-semibold text-blue-800 text-sm mb-2">🏞️ Land Size Calculator:</h5>
                     <div className="space-y-1 text-xs text-blue-700">
-                      <p><span className="font-medium">Base parcel:</span> 25 units = 300m² of land</p>
+                      <p><span className="font-medium">Base parcel:</span> 25 units = 400m² of land</p>
                       <p><span className="font-medium">Each additional unit:</span> +12m² of land</p>
                       {conversion[landType] >= 25 && (
                         <div className="mt-2 pt-2 border-t border-blue-300">
